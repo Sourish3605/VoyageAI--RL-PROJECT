@@ -4,15 +4,14 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // other settings
-  preview: {
-    allowedHosts: ['voyageai-xtoq.onrender.com'],
-    port: 10000,
-  },
   plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-}));
+  preview: {
+    allowedHosts: ["voyageai-xtoq.onrender.com"],
+    port: 10000,
+  },
+});
