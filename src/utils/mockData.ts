@@ -66,7 +66,7 @@ const generateTravelData = (params: SearchParams): TravelOption[] => {
   let basePrice: number;
   if (params.transportMode === 'flight') {
     // Flights: base between 8,000–14,000 (more moderate)
-    basePrice = Math.random() * 6000 + 8000;
+    basePrice = Math.random() * 4000+ 6000;
 
   } else if (params.transportMode === 'train') {
     // Trains: base between 1500-3500
@@ -158,5 +158,6 @@ export const generateMockResults = (params: SearchParams): SearchResults => {
     priceStats,
   };
 };
+
 
 
