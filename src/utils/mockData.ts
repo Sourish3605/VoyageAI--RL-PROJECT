@@ -28,13 +28,15 @@ const getPriceMultiplier = (transportMode: TransportMode, daysUntil: number): nu
   
   if (transportMode === 'flight') {
     // Flights: High prices for next 5 days, then decrease
+    // Flights: steeper last-minute surge
     if (daysUntil <= 5) {
-      return 1.5 + (5 - daysUntil) * 0.15; // 1.5x to 2.25x (increases as date gets closer)
+      return 1.8 + (5 - daysUntil) * 0.2; // 1.8x to ~2.8x
     } else if (daysUntil <= 10) {
-      return 1.2 + (10 - daysUntil) * 0.06; // 1.2x to 1.5x (gradually increases)
+      return 1.3 + (10 - daysUntil) * 0.07; // 1.3x to 2.0x\
     } else {
-      return 0.9 + Math.random() * 0.3; // 0.9x to 1.2x (cheapest)
+      return 1.0 + Math.random() * 0.3; // 1.0x to 1.3x
     }
+
   } else if (transportMode === 'train') {
     // Trains: Moderate increase for next 5 days, stable after
     if (daysUntil <= 5) {
@@ -62,8 +64,9 @@ const generateTravelData = (params: SearchParams): TravelOption[] => {
   // Use transport-mode-specific base price ranges so flights are consistently more expensive
   let basePrice: number;
   if (params.transportMode === 'flight') {
-    // Flights: base between 3000-6000
-    basePrice = Math.random() * 3000 + 3000;
+    // Flights: base between 10,000–18,000 (was 3,000–6,000)
+    basePrice = Math.random() * 8000 + 10000;
+
   } else if (params.transportMode === 'train') {
     // Trains: base between 1500-3500
     basePrice = Math.random() * 2000 + 1500;
@@ -154,3 +157,4 @@ export const generateMockResults = (params: SearchParams): SearchResults => {
     priceStats,
   };
 };
+
