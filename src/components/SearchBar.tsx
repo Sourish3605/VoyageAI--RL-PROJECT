@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Plane, Train, Bus, MapPin, Calendar as CalendarIcon, ArrowRight, Search, ArrowLeftRight, Users } from 'lucide-react';
+import { Plane, Train, Bus, MapPin, Calendar as CalendarIcon, ArrowRight, Search, ArrowLeftRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -29,9 +29,6 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
   const [destinationOpen, setDestinationOpen] = useState(false);
   const [departureDateOpen, setDepartureDateOpen] = useState(false);
   const [returnDateOpen, setReturnDateOpen] = useState(false);
-
-  // passengers added
-  const [passengers, setPassengers] = useState<number>(1);
 
   const availableModes = searchParams.origin && searchParams.destination
     ? getAvailableTransportModes(searchParams.origin.name, searchParams.destination.name)
@@ -56,7 +53,6 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
       if (searchParams.tripType === 'round-trip' && !searchParams.returnDate) {
         return;
       }
-      // attach passengers into SearchParams if desired (you can extend SearchParams type)
       onSearch(searchParams);
     }
   };
@@ -77,88 +73,52 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
     }
   };
 
-  // shared classes for popover trigger buttons to ensure consistent hover/focus
-  const popoverTriggerClass =
-    'w-full justify-start h-14 text-left font-normal rounded-lg border border-transparent bg-white/6 hover:bg-white/10 hover:border-white/20 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary';
-
-  // shared classes for tab trigger
-  const tabActiveClass = 'bg-white text-slate-900 shadow-md transform -translate-y-0.5';
-  const tabInactiveClass = 'text-white/90 hover:bg-white/8';
-
   return (
     <div className="w-full max-w-6xl mx-auto space-y-6">
       {/* Trip Type Toggle */}
       <div className="flex gap-2">
-        <button
-          type="button"
+        <Button
+          variant={searchParams.tripType === 'one-way' ? 'default' : 'outline'}
           onClick={() => setSearchParams(prev => ({ ...prev, tripType: 'one-way', returnDate: null }))}
-          aria-pressed={searchParams.tripType === 'one-way'}
-          className={cn(
-            'px-4 py-2 rounded-full text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-            searchParams.tripType === 'one-way'
-              ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700 focus-visible:ring-blue-400'
-              : 'bg-white/10 text-white/90 hover:bg-white/20 focus-visible:ring-white/10'
-          )}
+          className="rounded-full"
         >
           One-way
-        </button>
-
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant={searchParams.tripType === 'round-trip' ? 'default' : 'outline'}
           onClick={() => setSearchParams(prev => ({ ...prev, tripType: 'round-trip' }))}
-          aria-pressed={searchParams.tripType === 'round-trip'}
-          className={cn(
-            'px-4 py-2 rounded-full text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-            searchParams.tripType === 'round-trip'
-              ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700 focus-visible:ring-blue-400'
-              : 'bg-white/10 text-white/90 hover:bg-white/20 focus-visible:ring-white/10'
-          )}
+          className="rounded-full"
         >
           Round-trip
-        </button>
+        </Button>
       </div>
 
       {/* Transport Mode Tabs */}
-      <div className="w-full max-w-md">
-        <div className="grid grid-cols-3 gap-2">
-          {(['flight', 'train', 'bus'] as TransportMode[]).map(mode => {
-            const active = searchParams.transportMode === mode;
-            const disabled = !availableModes.includes(mode);
-            return (
-              <button
-                key={mode}
-                onClick={() => !disabled && setSearchParams(prev => ({ ...prev, transportMode: mode }))}
-                disabled={disabled}
-                aria-pressed={active}
-                className={cn(
-                  'flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-                  disabled ? 'opacity-40 cursor-not-allowed bg-white/5 text-white/60' : '',
-                  active ? tabActiveClass : tabInactiveClass,
-                  'focus-visible:ring-blue-400'
-                )}
-                title={disabled ? 'Not available for selected route' : undefined}
-              >
-                {getTransportIcon(mode)}
-                <span className="capitalize">{mode}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <Tabs value={searchParams.transportMode} onValueChange={(value) => setSearchParams(prev => ({ ...prev, transportMode: value as TransportMode }))}>
+        <TabsList className="grid w-full max-w-md grid-cols-3">
+          {(['flight', 'train', 'bus'] as TransportMode[]).map(mode => (
+            <TabsTrigger 
+              key={mode} 
+              value={mode} 
+              disabled={!availableModes.includes(mode)}
+              className="flex items-center gap-2"
+            >
+              {getTransportIcon(mode)}
+              <span className="capitalize">{mode}</span>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
-      {/* Search Form Card */}
-      <div className="bg-card rounded-2xl shadow-card p-6 border border-white/6">
+      {/* Search Form */}
+      <div className="bg-card rounded-2xl shadow-card p-6 border">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_auto_auto] gap-4 items-end">
           {/* Origin */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">From</label>
             <Popover open={originOpen} onOpenChange={setOriginOpen}>
               <PopoverTrigger asChild>
-                <button
-                  className={popoverTriggerClass}
-                  aria-haspopup="dialog"
-                  aria-expanded={originOpen}
-                >
+                <Button variant="outline" className="w-full justify-start h-14 text-left font-normal">
                   <MapPin className="mr-2 h-4 w-4 text-primary" />
                   {searchParams.origin ? (
                     <div className="flex flex-col">
@@ -168,9 +128,8 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
                   ) : (
                     <span className="text-muted-foreground">Select city</span>
                   )}
-                </button>
+                </Button>
               </PopoverTrigger>
-
               <PopoverContent className="w-80 p-0" align="start">
                 <Command>
                   <CommandInput placeholder="Search city..." />
@@ -199,25 +158,16 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           </div>
 
           {/* Swap Button */}
-          <button
-            type="button"
-            onClick={swapCities}
-            className="mb-2 md:mb-0 inline-flex items-center justify-center h-10 w-10 rounded-full bg-white/6 hover:bg-white/10 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400"
-            aria-label="Swap origin and destination"
-          >
+          <Button variant="ghost" size="icon" onClick={swapCities} className="mb-2 md:mb-0">
             <ArrowLeftRight className="h-4 w-4" />
-          </button>
+          </Button>
 
           {/* Destination */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">To</label>
             <Popover open={destinationOpen} onOpenChange={setDestinationOpen}>
               <PopoverTrigger asChild>
-                <button
-                  className={popoverTriggerClass}
-                  aria-haspopup="dialog"
-                  aria-expanded={destinationOpen}
-                >
+                <Button variant="outline" className="w-full justify-start h-14 text-left font-normal">
                   <MapPin className="mr-2 h-4 w-4 text-accent" />
                   {searchParams.destination ? (
                     <div className="flex flex-col">
@@ -227,9 +177,8 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
                   ) : (
                     <span className="text-muted-foreground">Select city</span>
                   )}
-                </button>
+                </Button>
               </PopoverTrigger>
-
               <PopoverContent className="w-80 p-0" align="start">
                 <Command>
                   <CommandInput placeholder="Search city..." />
@@ -262,11 +211,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
             <label className="text-sm font-medium text-muted-foreground">Departure</label>
             <Popover open={departureDateOpen} onOpenChange={setDepartureDateOpen}>
               <PopoverTrigger asChild>
-                <button
-                  className={popoverTriggerClass}
-                  aria-haspopup="dialog"
-                  aria-expanded={departureDateOpen}
-                >
+                <Button variant="outline" className="w-full justify-start h-14 text-left font-normal">
                   <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
                   {searchParams.departureDate ? (
                     <div className="flex flex-col">
@@ -276,9 +221,8 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
                   ) : (
                     <span className="text-muted-foreground">Select date</span>
                   )}
-                </button>
+                </Button>
               </PopoverTrigger>
-
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
@@ -299,11 +243,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
               <label className="text-sm font-medium text-muted-foreground">Return</label>
               <Popover open={returnDateOpen} onOpenChange={setReturnDateOpen}>
                 <PopoverTrigger asChild>
-                  <button
-                    className={popoverTriggerClass}
-                    aria-haspopup="dialog"
-                    aria-expanded={returnDateOpen}
-                  >
+                  <Button variant="outline" className="w-full justify-start h-14 text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4 text-accent" />
                     {searchParams.returnDate ? (
                       <div className="flex flex-col">
@@ -313,9 +253,8 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
                     ) : (
                       <span className="text-muted-foreground">Select date</span>
                     )}
-                  </button>
+                  </Button>
                 </PopoverTrigger>
-
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
@@ -331,51 +270,16 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
             </div>
           )}
 
-          {/* Passengers + Search Button */}
-          <div className="flex items-center gap-3 justify-end">
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-muted-foreground">Passengers</label>
-              <div className="inline-flex items-center bg-white/6 rounded-lg">
-                <button
-                  type="button"
-                  onClick={() => setPassengers(p => Math.max(1, p - 1))}
-                  className="px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400 hover:bg-white/10 transition"
-                  aria-label="Decrease passengers"
-                >
-                  -
-                </button>
-                <div className="px-3 py-2 min-w-[48px] text-center">{passengers}</div>
-                <button
-                  type="button"
-                  onClick={() => setPassengers(p => Math.min(9, p + 1))}
-                  className="px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400 hover:bg-white/10 transition"
-                  aria-label="Increase passengers"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
-            <button
-              onClick={handleSearch}
-              disabled={
-                !searchParams.origin ||
-                !searchParams.destination ||
-                !searchParams.departureDate ||
-                (searchParams.tripType === 'round-trip' && !searchParams.returnDate)
-              }
-              className={cn(
-                'h-14 px-6 rounded-lg text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-                !searchParams.origin || !searchParams.destination || !searchParams.departureDate || (searchParams.tripType === 'round-trip' && !searchParams.returnDate)
-                  ? 'bg-white/10 text-white/60 cursor-not-allowed border border-transparent'
-                  : 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-400 shadow-md'
-              )}
-              aria-label="Search"
-            >
-              <Search className="mr-2 h-5 w-5 inline-block" />
-              Search
-            </button>
-          </div>
+          {/* Search Button */}
+          <Button 
+            onClick={handleSearch}
+            disabled={!searchParams.origin || !searchParams.destination || !searchParams.departureDate || (searchParams.tripType === 'round-trip' && !searchParams.returnDate)}
+            className="h-14 px-8"
+            size="lg"
+          >
+            <Search className="mr-2 h-5 w-5" />
+            Search
+          </Button>
         </div>
 
         {/* Available Modes Info */}
