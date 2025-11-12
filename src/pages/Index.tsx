@@ -21,7 +21,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Inject keyframes for the gradient shimmer */}
+      {/* ✅ Keyframes for shimmer animation */}
       <style>{`
         @keyframes gradientShift {
           0% { background-position: 0% 50%; }
@@ -32,7 +32,7 @@ const Index = () => {
 
       {/* ================= HERO SECTION ================= */}
       <header className="relative overflow-hidden bg-gradient-to-b from-white/80 to-primary/5 border-b">
-        {/* Subtle SVG pattern background */}
+        {/* Subtle pattern */}
         <div
           className="absolute inset-0 opacity-30"
           style={{
@@ -44,17 +44,19 @@ const Index = () => {
           }}
         />
 
-        {/* Content */}
         <div className="container mx-auto px-4 py-20 relative">
           <div className="text-center mb-10">
-            {/* Brand Name with animated gradient shimmer */}
+            {/* ✅ Soft animated gradient logo text */}
             <h1
-              className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight bg-clip-text text-transparent"
+              className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight 
+                         bg-clip-text text-transparent select-none inline-block"
               style={{
-                background:
+                backgroundImage:
                   'linear-gradient(90deg, #7B6FF0 0%, #8F84F8 45%, #B9A7FF 100%)',
                 backgroundSize: '200% 200%',
-                animation: 'gradientShift 6s ease infinite',
+                animation: 'gradientShift 8s ease infinite',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
               }}
             >
               VoyageAI
@@ -75,7 +77,7 @@ const Index = () => {
             </p>
           </div>
 
-          {/* Icons Row */}
+          {/* Feature Icons */}
           <div className="flex flex-wrap justify-center gap-6 text-sm mb-12">
             <div className="flex items-center gap-2">
               <div className="p-2 rounded-lg bg-primary/10">
@@ -108,7 +110,7 @@ const Index = () => {
         </div>
       </header>
 
-      {/* ================= SEARCH LOADING ================= */}
+      {/* ================= SEARCHING STATE ================= */}
       {isSearching && (
         <div className="container mx-auto px-4 py-20">
           <div className="text-center space-y-4">
@@ -130,7 +132,7 @@ const Index = () => {
         </div>
       )}
 
-      {/* ================= FEATURES SECTION (Default View) ================= */}
+      {/* ================= FEATURES SECTION ================= */}
       {!searchResults && !isSearching && (
         <div className="container mx-auto px-4 py-20">
           <div className="text-center mb-12">
