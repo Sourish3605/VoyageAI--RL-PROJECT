@@ -124,7 +124,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
       {/* Search Form — DARK (flexible search column) */}
       <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-indigo-700 
                 text-white rounded-2xl shadow-lg 
-                px-8 py-6 border border-transparent overflow-hidden relative 
+                px-8 py-6 border border-transparent overflow-auto relative 
                 w-[105%] max-w-7xl mx-auto">
 
         {/* grid: last column flexible via minmax(180px, 1fr) so Search can grow/shrink */}
@@ -353,4 +353,5 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
     </div>
   );
 };
+
 
