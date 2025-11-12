@@ -166,42 +166,42 @@ const Index = () => {
         </div>
       )}
 
-      {/* ================= WHY CHOOSE SECTION (Animated) ================= */}
+      {/* ================= WHY CHOOSE SECTION (animated) ================= */}
       {!searchResults && !isSearching && (
-        <section className="py-20 bg-gradient-to-b from-indigo-950 via-indigo-900 to-purple-950">
+        <section className="py-20 bg-gray-50">
           <div className="container mx-auto px-4">
             {/* Section Header */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-4xl font-extrabold mb-4 text-white drop-shadow-lg">
+            <div className="text-center mb-16">
+              <motion.h2
+                initial={{ opacity: 0, y: -12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="text-4xl font-extrabold text-gray-900 mb-4"
+              >
                 Why Choose Our Platform?
-              </h2>
-              <p className="text-white/90 max-w-2xl mx-auto text-lg">
-                Experience the future of travel booking with AI-powered recommendations.
+              </motion.h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Experience the future of travel booking with AI-powered recommendations and real-time intelligence.
               </p>
-            </motion.div>
+            </div>
 
             {/* Cards Grid */}
-            <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
               {[
                 {
                   title: 'AI Recommendations',
-                  desc: 'Our model continuously learns to provide the best, cheapest, and fastest options.',
+                  desc: 'Our model continuously learns to provide the best, cheapest, and fastest travel options.',
                   Icon: Sparkles,
                 },
                 {
                   title: 'Live Price Comparison',
-                  desc: 'Real-time prices from multiple providers including AbhiBus, RedBus, IRCTC, and MakeMyTrip.',
+                  desc: 'Real-time prices from AbhiBus, RedBus, IRCTC, and MakeMyTrip — all compared instantly.',
                   Icon: TrendingUp,
                 },
                 {
                   title: 'Smart Search',
-                  desc: 'Intelligent autocomplete with typo tolerance and dynamic mode filtering.',
+                  desc: 'Intelligent autocomplete with typo tolerance and dynamic mode filtering for easy booking.',
                   Icon: Shield,
                 },
               ].map((card, i) => {
@@ -209,23 +209,21 @@ const Index = () => {
                 return (
                   <motion.div
                     key={card.title}
-                    initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                    className="group bg-white rounded-2xl p-8 text-center shadow-lg border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-indigo-200 hover:bg-gradient-to-b hover:from-white hover:to-indigo-50 cursor-pointer"
+                    initial={{ opacity: 0, y: 24, scale: 0.98 }}
                     whileInView={{ opacity: 1, y: 0, scale: 1 }}
                     viewport={{ once: true, amount: 0.2 }}
-                    transition={{ duration: 0.7, delay: i * 0.15, ease: 'easeOut' }}
-                    className="group text-center space-y-4 p-8 rounded-2xl 
-                               bg-white/10 border border-white/20 shadow-lg 
-                               hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 cursor-pointer"
+                    transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.12 }}
                   >
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full 
-                                    bg-gradient-to-tr from-purple-500 to-indigo-500 shadow-md 
-                                    group-hover:scale-110 transition-transform">
+                    <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 shadow-md group-hover:scale-110 transform transition">
                       <Icon className="h-8 w-8 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-indigo-300">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-700">
                       {card.title}
                     </h3>
-                    <p className="text-white/85">{card.desc}</p>
+                    <p className="text-gray-600 group-hover:text-gray-700">
+                      {card.desc}
+                    </p>
                   </motion.div>
                 );
               })}
