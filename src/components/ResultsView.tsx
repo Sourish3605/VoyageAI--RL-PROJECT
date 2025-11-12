@@ -41,37 +41,64 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
   };
 
   // ✅ Updated: booking URLs with passenger + autofill (bus/train only)
-  const getBookingUrl = (option: TravelOption, passengerCount = 1) => {
-    const { provider, transportMode, departure, arrival, date } = option;
-    const from = encodeURIComponent(departure.location);
-    const to = encodeURIComponent(arrival.location);
-    const travelDate = date ? date.split('T')[0] : new Date().toISOString().split('T')[0];
+  // Returns an array of booking site choices for an option
+  const getBookingUrlList = (option: TravelOption, passengerCount = 1) => {
+  const { provider, transportMode, departure, arrival, date } = option;
+  const from = encodeURIComponent(departure.location);
+  const to = encodeURIComponent(arrival.location);
+  const travelDate = date ? date.split('T')[0] : new Date().toISOString().split('T')[0];
 
-    // ✈️ Flights — keep official websites
-    if (transportMode === 'flight') {
-      if (provider.includes('IndiGo')) return 'https://www.goindigo.in/';
-      if (provider.includes('Air India')) return 'https://www.airindia.com/';
-      if (provider.includes('SpiceJet')) return 'https://book.spicejet.com/';
-      if (provider.includes('Vistara')) return 'https://www.airvistara.com/in/en';
-      if (provider.includes('Go First')) return 'https://www.flygofirst.com/';
-    }
+  const sites: { name: string; url: string }[] = [];
 
-    // 🚆 Trains — autofill route
-    if (transportMode === 'train') {
-      return `https://www.irctc.co.in/nget/train-search/${from}-${to}`;
-    }
+  // Flights: keep official airline sites (single choice)
+  if (transportMode === 'flight') {
+    if (provider.includes('IndiGo')) sites.push({ name: 'IndiGo', url: 'https://www.goindigo.in/' });
+    if (provider.includes('Air India')) sites.push({ name: 'Air India', url: 'https://www.airindia.com/' });
+    if (provider.includes('SpiceJet')) sites.push({ name: 'SpiceJet', url: 'https://book.spicejet.com/' });
+    if (provider.includes('Vistara')) sites.push({ name: 'Vistara', url: 'https://www.airvistara.com/in/en' });
+    if (provider.includes('Go First')) sites.push({ name: 'Go First', url: 'https://www.flygofirst.com/' });
 
-    // 🚌 Buses — autofill route, date, passengers
-    if (transportMode === 'bus') {
-      if (provider.includes('RedBus'))
-        return `https://www.redbus.in/bus-tickets/${from}-to-${to}?onward=${travelDate}&pax=${passengerCount}`;
-      if (provider.includes('AbhiBus'))
-        return `https://www.abhibus.com/bus/${from}-to-${to}?journeyDate=${travelDate}&pax=${passengerCount}`;
-      return `https://www.redbus.in/bus-tickets/${from}-to-${to}?onward=${travelDate}`;
-    }
+    // Also optionally add aggregators (open their home/search page)
+    sites.push({ name: 'MakeMyTrip', url: 'https://www.makemytrip.com/flights/' });
+    sites.push({ name: 'Skyscanner', url: 'https://www.skyscanner.co.in/' });
+    return sites;
+  }
 
-    return '#';
-  };
+  // Trains: IRCTC (route) + aggregator options
+  if (transportMode === 'train') {
+    sites.push({ name: 'IRCTC', url: `https://www.irctc.co.in/nget/train-search/${from}-${to}` });
+    // Aggregators — open their train/book/search pages (may require user to enter date)
+    sites.push({ name: 'RailYatri', url: 'https://www.railyatri.in/' });
+    sites.push({ name: 'ixigo (Trains)', url: 'https://www.ixigo.com/trains' });
+    sites.push({ name: 'Cleartrip (Trains)', url: 'https://www.cleartrip.com/trains' });
+    sites.push({ name: 'MakeMyTrip (Trains)', url: 'https://www.makemytrip.com/railways/' });
+    return sites;
+  }
+
+  // Buses: try deep-links for RedBus/AbhiBus, plus aggregators
+  if (transportMode === 'bus') {
+    // deep links that usually work:
+    sites.push({
+      name: 'RedBus',
+      url: `https://www.redbus.in/bus-tickets/${from}-to-${to}?onward=${travelDate}&pax=${passengerCount}`,
+    });
+    sites.push({
+      name: 'AbhiBus',
+      url: `https://www.abhibus.com/bus/${from}-to-${to}?journeyDate=${travelDate}&pax=${passengerCount}`,
+    });
+
+    // Aggregators / additional OTAs
+    sites.push({ name: 'MakeMyTrip (Bus)', url: `https://www.makemytrip.com/bus/` });
+    sites.push({ name: 'Goibibo (Bus)', url: 'https://www.goibibo.com/bus/' });
+    sites.push({ name: 'Paytm (Bus)', url: 'https://tickets.paytm.com/bus' });
+    sites.push({ name: 'ixigo (Bus)', url: 'https://bus.ixigo.com/' });
+
+    return sites;
+  }
+
+  return [{ name: 'Default', url: '#' }];
+};
+
 
   const TravelCard = ({
     option,
@@ -251,3 +278,4 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
     </div>
   );
 };
+
