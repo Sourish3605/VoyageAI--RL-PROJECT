@@ -35,26 +35,41 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
     );
   };
 
+  // ✅ UPDATED: Official airline & travel site links
   const getBookingUrl = (option: TravelOption) => {
     const { provider, transportMode, departure, arrival } = option;
     const origin = encodeURIComponent(departure.location);
     const destination = encodeURIComponent(arrival.location);
-    
-    // Generate affiliate/official booking URLs
+
+    // ✈️ Flights
     if (transportMode === 'flight') {
-      if (provider === 'IndiGo') return `https://www.goindigo.in/booking/flight-search.html?from=${origin}&to=${destination}`;
-      if (provider === 'Air India') return `https://www.airindia.com/in/en/book/flight-search.html`;
-      if (provider === 'SpiceJet') return `https://www.spicejet.com/`;
-      if (provider === 'Vistara') return `https://www.airvistara.com/in/en/book/flight-search`;
-      if (provider === 'Go First') return `https://www.flygofirst.com/`;
-    } else if (transportMode === 'train') {
+      if (provider.includes('IndiGo')) 
+        return `https://www.goindigo.in/booking/flight-search.html?from=${origin}&to=${destination}`;
+      if (provider.includes('Air India')) 
+        return `https://www.airindia.com/en/book/flight-search.html`;
+      if (provider.includes('SpiceJet')) 
+        return `https://book.spicejet.com/`;
+      if (provider.includes('Vistara')) 
+        return `https://www.airvistara.com/in/en/book/flight-search`;
+      if (provider.includes('Go First')) 
+        return `https://www.flygofirst.com/`;
+    }
+
+    // 🚆 Trains
+    if (transportMode === 'train') {
       return `https://www.irctc.co.in/nget/train-search`;
-    } else if (transportMode === 'bus') {
-      if (provider.includes('RedBus')) return `https://www.redbus.in/bus-tickets/${origin}-to-${destination}`;
-      if (provider.includes('AbhiBus')) return `https://www.abhibus.com/bus/${origin}-to-${destination}`;
+    }
+
+    // 🚌 Buses
+    if (transportMode === 'bus') {
+      if (provider.includes('RedBus')) 
+        return `https://www.redbus.in/bus-tickets/${origin}-to-${destination}`;
+      if (provider.includes('AbhiBus')) 
+        return `https://www.abhibus.com/bus/${origin}-to-${destination}`;
       return `https://www.redbus.in/`;
     }
-    
+
+    // Default (fallback)
     return '#';
   };
 
