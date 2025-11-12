@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { SearchBar } from '@/components/SearchBar';
 import { ResultsView } from '@/components/ResultsView';
 import { SearchParams, SearchResults } from '@/types/travel';
@@ -165,50 +166,72 @@ const Index = () => {
         </div>
       )}
 
-      {/* ================= WHY CHOOSE SECTION ================= */}
+      {/* ================= WHY CHOOSE SECTION (Animated) ================= */}
       {!searchResults && !isSearching && (
-        <div className="container mx-auto px-4 py-20">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 text-white">
-              Why Choose Our Platform?
-            </h2>
-            <p className="text-white/85 max-w-2xl mx-auto">
-              Experience the future of travel booking with AI-powered recommendations.
-            </p>
+        <section className="py-20 bg-gradient-to-b from-indigo-950 via-indigo-900 to-purple-950">
+          <div className="container mx-auto px-4">
+            {/* Section Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl font-extrabold mb-4 text-white drop-shadow-lg">
+                Why Choose Our Platform?
+              </h2>
+              <p className="text-white/90 max-w-2xl mx-auto text-lg">
+                Experience the future of travel booking with AI-powered recommendations.
+              </p>
+            </motion.div>
+
+            {/* Cards Grid */}
+            <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+              {[
+                {
+                  title: 'AI Recommendations',
+                  desc: 'Our model continuously learns to provide the best, cheapest, and fastest options.',
+                  Icon: Sparkles,
+                },
+                {
+                  title: 'Live Price Comparison',
+                  desc: 'Real-time prices from multiple providers including AbhiBus, RedBus, IRCTC, and MakeMyTrip.',
+                  Icon: TrendingUp,
+                },
+                {
+                  title: 'Smart Search',
+                  desc: 'Intelligent autocomplete with typo tolerance and dynamic mode filtering.',
+                  Icon: Shield,
+                },
+              ].map((card, i) => {
+                const Icon = card.Icon;
+                return (
+                  <motion.div
+                    key={card.title}
+                    initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.7, delay: i * 0.15, ease: 'easeOut' }}
+                    className="group text-center space-y-4 p-8 rounded-2xl 
+                               bg-white/10 border border-white/20 shadow-lg 
+                               hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 cursor-pointer"
+                  >
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full 
+                                    bg-gradient-to-tr from-purple-500 to-indigo-500 shadow-md 
+                                    group-hover:scale-110 transition-transform">
+                      <Icon className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white group-hover:text-indigo-300">
+                      {card.title}
+                    </h3>
+                    <p className="text-white/85">{card.desc}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="text-center space-y-4 p-6 rounded-2xl bg-white/10 border border-white/20 shadow-lg hover:shadow-xl transition-all">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500">
-                <Sparkles className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white">AI Recommendations</h3>
-              <p className="text-white/85">
-                Our model continuously learns to provide the best, cheapest, and fastest options.
-              </p>
-            </div>
-
-            <div className="text-center space-y-4 p-6 rounded-2xl bg-white/10 border border-white/20 shadow-lg hover:shadow-xl transition-all">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500">
-                <TrendingUp className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white">Live Price Comparison</h3>
-              <p className="text-white/85">
-                Real-time prices from multiple providers including AbhiBus, RedBus, IRCTC, and MakeMyTrip.
-              </p>
-            </div>
-
-            <div className="text-center space-y-4 p-6 rounded-2xl bg-white/10 border border-white/20 shadow-lg hover:shadow-xl transition-all">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500">
-                <Shield className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white">Smart Search</h3>
-              <p className="text-white/85">
-                Intelligent autocomplete with typo tolerance and dynamic transport mode filtering.
-              </p>
-            </div>
-          </div>
-        </div>
+        </section>
       )}
 
       {/* ================= FOOTER ================= */}
