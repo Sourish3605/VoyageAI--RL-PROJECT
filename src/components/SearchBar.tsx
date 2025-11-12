@@ -3,6 +3,8 @@ import { City, SearchParams, TransportMode } from '@/types/travel';
 import { INDIAN_CITIES, CITY_TYPO_MAPPINGS, getAvailableTransportModes } from '@/data/cities';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import { SearchBar } from '@/components/SearchBar';
+
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Plane, Train, Bus, MapPin, Calendar as CalendarIcon, ArrowLeftRight, Search } from 'lucide-react';
@@ -427,3 +429,4 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 };
 
 export default SearchBar;
+
