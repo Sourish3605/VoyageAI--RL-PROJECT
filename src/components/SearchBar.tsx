@@ -1,6 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { City, SearchParams, TransportMode } from '@/types/travel';
 import { INDIAN_CITIES, CITY_TYPO_MAPPINGS, getAvailableTransportModes } from '@/data/cities';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Badge } from '@/components/ui/badge';
 import { Plane, Train, Bus, MapPin, Calendar as CalendarIcon, ArrowLeftRight, Search } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -10,19 +14,13 @@ interface SearchBarProps {
 }
 
 /**
- * Simple, reliable SearchBar where all selected values are visible
- * at all times (no popover-only visibility).
- *
- * - origin/destination: <select> built from INDIAN_CITIES
- * - date: <input type="date">
- * - passengers: number input with +/- controls
- * - transport mode tabs (flight/train/bus)
- * - one-way / round-trip toggle
- *
- * This is intentionally straightforward (works across browsers and doesn't
- * rely on popover interactions for the presence of the selected values).
+ * Popover + Autocomplete search bar that:
+ * - shows search popovers for From/To and Date
+ * - always displays the *selected* values on the buttons (no hover needed)
+ * - closes popovers after selection
+ * - keeps accessible hover/focus states
  */
-export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     origin: null,
     destination: null,
@@ -32,32 +30,37 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     tripType: 'one-way',
   });
 
-  const [passengers, setPassengers] = useState<number>(1);
+  const [originOpen, setOriginOpen] = useState(false);
+  const [destOpen, setDestOpen] = useState(false);
+  const [depOpen, setDepOpen] = useState(false);
+  const [retOpen, setRetOpen] = useState(false);
 
-  // quick derived list for selects (you can limit or sort differently)
-  const cityOptions = useMemo(() => INDIAN_CITIES, []);
+  const [originQuery, setOriginQuery] = useState('');
+  const [destQuery, setDestQuery] = useState('');
+  const [passengers, setPassengers] = useState<number>(1);
 
   const availableModes = searchParams.origin && searchParams.destination
     ? getAvailableTransportModes(searchParams.origin.name, searchParams.destination.name)
     : (['flight', 'train', 'bus'] as TransportMode[]);
 
-  const setOriginById = (id: string) => {
-    const c = INDIAN_CITIES.find(x => x.id === id) || null;
-    setSearchParams(prev => ({ ...prev, origin: c }));
+  const typoMatch = (s: string) => CITY_TYPO_MAPPINGS[s?.toLowerCase()] || null;
+
+  const filterCities = (q: string) => {
+    const s = (q || '').toLowerCase().trim();
+    if (!s) return INDIAN_CITIES.slice(0, 30);
+    const mapped = typoMatch(s);
+    return INDIAN_CITIES.filter(c =>
+      c.name.toLowerCase().includes(s) ||
+      c.code.toLowerCase().includes(s) ||
+      c.state.toLowerCase().includes(s) ||
+      (mapped && c.name.toLowerCase() === mapped.toLowerCase())
+    );
   };
 
-  const setDestinationById = (id: string) => {
-    const c = INDIAN_CITIES.find(x => x.id === id) || null;
-    setSearchParams(prev => ({ ...prev, destination: c }));
-  };
+  const originResults = useMemo(() => filterCities(originQuery), [originQuery]);
+  const destResults = useMemo(() => filterCities(destQuery), [destQuery]);
 
-  const handleDepartureChange = (value: string) => {
-    setSearchParams(prev => ({ ...prev, departureDate: value ? new Date(value) : null }));
-  };
-
-  const handleReturnChange = (value: string) => {
-    setSearchParams(prev => ({ ...prev, returnDate: value ? new Date(value) : null }));
-  };
+  const popularCities = INDIAN_CITIES.filter(c => c.popular).slice(0, 8);
 
   const swapCities = () => {
     setSearchParams(prev => ({ ...prev, origin: prev.destination, destination: prev.origin }));
@@ -66,7 +69,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const handleSearch = () => {
     if (!searchParams.origin || !searchParams.destination || !searchParams.departureDate) return;
     if (searchParams.tripType === 'round-trip' && !searchParams.returnDate) return;
-    // attach passengers if your SearchParams type supports it (not in the snippet)
+    // (If you want passengers in SearchParams, add the field to type and attach here)
     onSearch(searchParams);
   };
 
@@ -75,17 +78,23 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       case 'flight': return <Plane className="h-4 w-4" />;
       case 'train': return <Train className="h-4 w-4" />;
       case 'bus': return <Bus className="h-4 w-4" />;
+      default: return null;
     }
   };
 
+  // shared trigger classes
+  const triggerClass =
+    'w-full justify-start h-14 text-left font-normal rounded-lg border border-transparent bg-white/6 hover:bg-white/10 hover:border-white/20 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary';
+
   return (
     <div className="w-full max-w-6xl mx-auto space-y-6">
-      {/* Trip type */}
-      <div className="flex gap-3">
+      {/* Trip type toggle */}
+      <div className="flex gap-2">
         <button
           onClick={() => setSearchParams(prev => ({ ...prev, tripType: 'one-way', returnDate: null }))}
+          aria-pressed={searchParams.tripType === 'one-way'}
           className={cn(
-            'px-4 py-2 rounded-full text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+            'px-4 py-2 rounded-full text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
             searchParams.tripType === 'one-way' ? 'bg-blue-600 text-white shadow-md' : 'bg-white/10 text-white/90'
           )}
         >
@@ -94,8 +103,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
         <button
           onClick={() => setSearchParams(prev => ({ ...prev, tripType: 'round-trip' }))}
+          aria-pressed={searchParams.tripType === 'round-trip'}
           className={cn(
-            'px-4 py-2 rounded-full text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+            'px-4 py-2 rounded-full text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
             searchParams.tripType === 'round-trip' ? 'bg-blue-600 text-white shadow-md' : 'bg-white/10 text-white/90'
           )}
         >
@@ -103,7 +113,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         </button>
       </div>
 
-      {/* Transport mode tabs */}
+      {/* Mode tabs */}
       <div className="w-full max-w-md">
         <div className="grid grid-cols-3 gap-2">
           {(['flight', 'train', 'bus'] as TransportMode[]).map(mode => {
@@ -115,7 +125,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
                 onClick={() => !disabled && setSearchParams(prev => ({ ...prev, transportMode: mode }))}
                 disabled={disabled}
                 className={cn(
-                  'flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                  'flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition focus:outline-none',
                   disabled ? 'opacity-40 cursor-not-allowed bg-white/5 text-white/60' : '',
                   active ? 'bg-white text-slate-900 shadow-md' : 'text-white/90 hover:bg-white/8'
                 )}
@@ -128,27 +138,82 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         </div>
       </div>
 
-      {/* Search form (always-visible controls) */}
+      {/* Search card */}
       <div className="bg-card rounded-2xl shadow-card p-6 border border-white/6">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_auto_auto] gap-4 items-end">
-          {/* From - select */}
+          {/* FROM */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">From</label>
-            <select
-              value={searchParams.origin?.id || ''}
-              onChange={(e) => setOriginById(e.target.value)}
-              className="w-full h-14 px-4 rounded-lg bg-white/90 text-slate-900 shadow-sm border border-transparent hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="">Select city</option>
-              {cityOptions.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.name} — {c.state} ({c.code})
-                </option>
-              ))}
-            </select>
+
+            <Popover open={originOpen} onOpenChange={(v) => { setOriginOpen(v); if (!v) setOriginQuery(''); }}>
+              <PopoverTrigger asChild>
+                <button className={triggerClass} aria-haspopup="dialog" aria-expanded={originOpen}>
+                  <MapPin className="mr-2 h-4 w-4 text-primary" />
+                  {searchParams.origin ? (
+                    <div className="flex flex-col">
+                      <span className="font-semibold">{searchParams.origin.name}</span>
+                      <span className="text-xs text-muted-foreground">{searchParams.origin.state} · {searchParams.origin.code}</span>
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">Select city</span>
+                  )}
+                </button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-80 p-3" align="start">
+                <div className="space-y-2">
+                  <input
+                    value={originQuery}
+                    onChange={(e) => setOriginQuery(e.target.value)}
+                    placeholder="Search city..."
+                    className="w-full px-3 py-2 rounded-md border border-white/10 bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                    autoFocus
+                  />
+
+                  <div className="max-h-56 overflow-auto space-y-1">
+                    {originQuery.trim() === '' ? (
+                      <>
+                        <div className="text-xs text-muted-foreground mb-1">Popular</div>
+                        {popularCities.map(c => (
+                          <button
+                            key={c.id}
+                            onClick={() => {
+                              setSearchParams(prev => ({ ...prev, origin: c }));
+                              setOriginOpen(false);
+                              setOriginQuery('');
+                            }}
+                            className="w-full text-left px-3 py-2 rounded-md hover:bg-white/6 transition"
+                          >
+                            <div className="font-medium">{c.name}</div>
+                            <div className="text-xs text-muted-foreground">{c.state} · {c.code}</div>
+                          </button>
+                        ))}
+                      </>
+                    ) : (
+                      originResults.length > 0 ? originResults.slice(0, 100).map(c => (
+                        <button
+                          key={c.id}
+                          onClick={() => {
+                            setSearchParams(prev => ({ ...prev, origin: c }));
+                            setOriginOpen(false);
+                            setOriginQuery('');
+                          }}
+                          className="w-full text-left px-3 py-2 rounded-md hover:bg-white/6 transition"
+                        >
+                          <div className="font-medium">{c.name}</div>
+                          <div className="text-xs text-muted-foreground">{c.state} · {c.code}</div>
+                        </button>
+                      )) : (
+                        <div className="text-sm text-muted-foreground p-2">No city found.</div>
+                      )
+                    )}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
 
-          {/* Swap */}
+          {/* SWAP */}
           <button
             type="button"
             onClick={swapCities}
@@ -158,48 +223,147 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
             <ArrowLeftRight className="h-4 w-4" />
           </button>
 
-          {/* To - select */}
+          {/* TO */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">To</label>
-            <select
-              value={searchParams.destination?.id || ''}
-              onChange={(e) => setDestinationById(e.target.value)}
-              className="w-full h-14 px-4 rounded-lg bg-white/90 text-slate-900 shadow-sm border border-transparent hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="">Select city</option>
-              {cityOptions.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.name} — {c.state} ({c.code})
-                </option>
-              ))}
-            </select>
+
+            <Popover open={destOpen} onOpenChange={(v) => { setDestOpen(v); if (!v) setDestQuery(''); }}>
+              <PopoverTrigger asChild>
+                <button className={triggerClass} aria-haspopup="dialog" aria-expanded={destOpen}>
+                  <MapPin className="mr-2 h-4 w-4 text-accent" />
+                  {searchParams.destination ? (
+                    <div className="flex flex-col">
+                      <span className="font-semibold">{searchParams.destination.name}</span>
+                      <span className="text-xs text-muted-foreground">{searchParams.destination.state} · {searchParams.destination.code}</span>
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">Select city</span>
+                  )}
+                </button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-80 p-3" align="start">
+                <div className="space-y-2">
+                  <input
+                    value={destQuery}
+                    onChange={(e) => setDestQuery(e.target.value)}
+                    placeholder="Search city..."
+                    className="w-full px-3 py-2 rounded-md border border-white/10 bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                    autoFocus
+                  />
+
+                  <div className="max-h-56 overflow-auto space-y-1">
+                    {destQuery.trim() === '' ? (
+                      <>
+                        <div className="text-xs text-muted-foreground mb-1">Popular</div>
+                        {popularCities.map(c => (
+                          <button
+                            key={c.id}
+                            onClick={() => {
+                              setSearchParams(prev => ({ ...prev, destination: c }));
+                              setDestOpen(false);
+                              setDestQuery('');
+                            }}
+                            className="w-full text-left px-3 py-2 rounded-md hover:bg-white/6 transition"
+                          >
+                            <div className="font-medium">{c.name}</div>
+                            <div className="text-xs text-muted-foreground">{c.state} · {c.code}</div>
+                          </button>
+                        ))}
+                      </>
+                    ) : (
+                      destResults.length > 0 ? destResults.slice(0, 100).map(c => (
+                        <button
+                          key={c.id}
+                          onClick={() => {
+                            setSearchParams(prev => ({ ...prev, destination: c }));
+                            setDestOpen(false);
+                            setDestQuery('');
+                          }}
+                          className="w-full text-left px-3 py-2 rounded-md hover:bg-white/6 transition"
+                        >
+                          <div className="font-medium">{c.name}</div>
+                          <div className="text-xs text-muted-foreground">{c.state} · {c.code}</div>
+                        </button>
+                      )) : (
+                        <div className="text-sm text-muted-foreground p-2">No city found.</div>
+                      )
+                    )}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
 
-          {/* Departure - visible date input */}
+          {/* DEPARTURE */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">Departure</label>
-            <input
-              type="date"
-              onChange={(e) => handleDepartureChange(e.target.value)}
-              value={searchParams.departureDate ? format(searchParams.departureDate, 'yyyy-MM-dd') : ''}
-              className="w-full h-14 px-4 rounded-lg bg-white/90 text-slate-900 shadow-sm border border-transparent hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+
+            <Popover open={depOpen} onOpenChange={setDepOpen}>
+              <PopoverTrigger asChild>
+                <button className={triggerClass} aria-haspopup="dialog" aria-expanded={depOpen}>
+                  <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
+                  {searchParams.departureDate ? (
+                    <div className="flex flex-col">
+                      <span className="font-semibold">{format(searchParams.departureDate, 'MMM dd')}</span>
+                      <span className="text-xs text-muted-foreground">{format(searchParams.departureDate, 'EEEE')}</span>
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">Select date</span>
+                  )}
+                </button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={searchParams.departureDate || undefined}
+                  onSelect={(date) => {
+                    setSearchParams(prev => ({ ...prev, departureDate: date || null }));
+                    setDepOpen(false);
+                  }}
+                  disabled={(date) => date < new Date()}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
-          {/* Return - visible when round-trip */}
+          {/* RETURN (round-trip) */}
           {searchParams.tripType === 'round-trip' && (
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">Return</label>
-              <input
-                type="date"
-                onChange={(e) => handleReturnChange(e.target.value)}
-                value={searchParams.returnDate ? format(searchParams.returnDate, 'yyyy-MM-dd') : ''}
-                className="w-full h-14 px-4 rounded-lg bg-white/90 text-slate-900 shadow-sm border border-transparent hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+
+              <Popover open={retOpen} onOpenChange={setRetOpen}>
+                <PopoverTrigger asChild>
+                  <button className={triggerClass} aria-haspopup="dialog" aria-expanded={retOpen}>
+                    <CalendarIcon className="mr-2 h-4 w-4 text-accent" />
+                    {searchParams.returnDate ? (
+                      <div className="flex flex-col">
+                        <span className="font-semibold">{format(searchParams.returnDate, 'MMM dd')}</span>
+                        <span className="text-xs text-muted-foreground">{format(searchParams.returnDate, 'EEEE')}</span>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">Select date</span>
+                    )}
+                  </button>
+                </PopoverTrigger>
+
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={searchParams.returnDate || undefined}
+                    onSelect={(date) => {
+                      setSearchParams(prev => ({ ...prev, returnDate: date || null }));
+                      setRetOpen(false);
+                    }}
+                    disabled={(date) => date < (searchParams.departureDate || new Date())}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           )}
 
-          {/* Passengers + Search */}
+          {/* PASSENGERS + SEARCH */}
           <div className="flex items-center gap-3 justify-end">
             <div className="flex items-center gap-2">
               <label className="text-sm text-muted-foreground">Passengers</label>
@@ -246,14 +410,14 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
           </div>
         </div>
 
-        {/* Available modes info */}
+        {/* available modes badges */}
         {searchParams.origin && searchParams.destination && (
           <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
             <span>Available transport:</span>
             {availableModes.map(mode => (
-              <span key={mode} className="px-2 py-1 bg-white/6 rounded-md text-xs capitalize">
+              <Badge key={mode} variant="secondary" className="capitalize">
                 {mode}
-              </span>
+              </Badge>
             ))}
           </div>
         )}
