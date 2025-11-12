@@ -81,54 +81,52 @@ const Index = () => {
           </h1>
 
           {/* 🩵 Tagline */}
-          <p className="mt-4 text-lg font-medium text-violet-200">
+          <p className="mt-4 text-lg font-extrabold text-white tracking-wide drop-shadow-lg">
             AI that finds your cheapest way to go
           </p>
 
           {/* ✈️ Inspirational Quote */}
-          <p className="mt-2 italic text-base md:text-lg text-indigo-200 max-w-3xl mx-auto">
+          <p className="mt-2 italic text-base md:text-lg font-extrabold text-white max-w-3xl mx-auto drop-shadow-lg">
             “Travel not to escape life, but so life doesn't escape you — arrive, explore, enjoy.”
           </p>
 
           {/* 💼 Subtitle */}
-          <h2 className="text-3xl md:text-4xl font-bold mt-10 mb-3">
-            <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
-              Find Your Perfect Journey
-            </span>
+          <h2 className="text-3xl md:text-4xl font-extrabold mt-10 mb-3 text-white drop-shadow-2xl">
+            Find Your Perfect Journey
           </h2>
 
-          <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+          <p className="text-lg text-white font-extrabold max-w-2xl mx-auto tracking-wide drop-shadow-lg">
             Compare flights, trains, and buses across India with intelligent recommendations powered by AI.
           </p>
 
           {/* 🔹 Feature Icons */}
-          <div className="flex flex-wrap justify-center gap-6 text-sm mt-8 mb-12">
+          <div className="flex flex-wrap justify-center gap-6 text-base mt-8 mb-12 font-extrabold tracking-wide text-white">
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-indigo-400/10">
-                <TrendingUp className="h-4 w-4 text-indigo-400" />
+              <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+                <TrendingUp className="h-5 w-5 text-white" />
               </div>
-              <span className="text-indigo-200">Best Prices</span>
+              <span>Best Prices</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-violet-400/10">
-                <Sparkles className="h-4 w-4 text-violet-400" />
+              <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+                <Sparkles className="h-5 w-5 text-white" />
               </div>
-              <span className="text-violet-200">AI Recommendations</span>
+              <span>AI Recommendations</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-blue-400/10">
-                <Shield className="h-4 w-4 text-blue-400" />
+              <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+                <Shield className="h-5 w-5 text-white" />
               </div>
-              <span className="text-blue-200">Secure Booking</span>
+              <span>Secure Booking</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-purple-400/10">
-                <Zap className="h-4 w-4 text-purple-400" />
+              <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+                <Zap className="h-5 w-5 text-white" />
               </div>
-              <span className="text-purple-200">Instant Results</span>
+              <span>Instant Results</span>
             </div>
           </div>
 
