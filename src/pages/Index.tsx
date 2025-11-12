@@ -48,7 +48,7 @@ const Index = () => {
           aria-hidden
           className="absolute inset-0"
           style={{
-            backgroundImage: "url('/travel-bg.png')", // Place your hero image in /public/
+            backgroundImage: "url('/travel-bg.png')",
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center center',
             backgroundSize: 'cover',
@@ -58,7 +58,7 @@ const Index = () => {
           }}
         />
 
-        {/* 🌫 Overlay for better contrast */}
+        {/* 🌫 Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
 
         {/* ================= TEXT CONTENT ================= */}
@@ -90,8 +90,18 @@ const Index = () => {
             “Travel not to escape life, but so life doesn't escape you — arrive, explore, enjoy.”
           </p>
 
-          {/* 💼 Subtitle */}
-          <h2 className="text-3xl md:text-4xl font-extrabold mt-10 mb-3 text-white drop-shadow-2xl">
+          {/* 💼 Subtitle with Stylish Gradient */}
+          <h2
+            className="text-4xl md:text-5xl font-extrabold mt-10 mb-3 drop-shadow-2xl inline-block bg-clip-text text-transparent"
+            style={{
+              backgroundImage:
+                'linear-gradient(90deg, #7B5CFF 0%, #8F77FF 50%, #C3B4FF 100%)',
+              backgroundSize: '200% 200%',
+              animation: 'gradientShift 10s ease infinite',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
             Find Your Perfect Journey
           </h2>
 
@@ -102,28 +112,28 @@ const Index = () => {
           {/* 🔹 Feature Icons */}
           <div className="flex flex-wrap justify-center gap-6 text-base mt-8 mb-12 font-extrabold tracking-wide text-white">
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+              <div className="p-2 rounded-lg bg-gradient-to-tr from-indigo-500 to-indigo-800 shadow-md">
                 <TrendingUp className="h-5 w-5 text-white" />
               </div>
               <span>Best Prices</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+              <div className="p-2 rounded-lg bg-gradient-to-tr from-violet-500 to-purple-800 shadow-md">
                 <Sparkles className="h-5 w-5 text-white" />
               </div>
               <span>AI Recommendations</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+              <div className="p-2 rounded-lg bg-gradient-to-tr from-blue-500 to-cyan-700 shadow-md">
                 <Shield className="h-5 w-5 text-white" />
               </div>
               <span>Secure Booking</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+              <div className="p-2 rounded-lg bg-gradient-to-tr from-purple-500 to-pink-700 shadow-md">
                 <Zap className="h-5 w-5 text-white" />
               </div>
               <span>Instant Results</span>
