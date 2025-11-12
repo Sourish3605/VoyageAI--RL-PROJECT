@@ -121,8 +121,8 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
         </TabsList>
       </Tabs>
 
-      {/* Search Form — DARK (stable grid + placeholder for Return) */}
-      <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-indigo-700 text-white rounded-2xl shadow-lg p-6 border border-transparent overflow-hidden relative">
+      {/* Search Form — DARK (flexible search column) */}
+      <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-indigo-700 text-white rounded-2xl shadow-lg p-6 border border-transparent overflow-hidden">
         {/* grid: last column flexible via minmax(180px, 1fr) so Search can grow/shrink */}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_auto_minmax(180px,1fr)] gap-4 items-end">
           {/* Origin */}
@@ -164,6 +164,8 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
                       ))}
                     </CommandGroup>
 
+                    {/* dynamic search results */}
+                    {INDIAN_CITIES.slice(0, 0) /* placeholder to keep lint quiet */}
                     <CommandGroup heading="All Cities">
                       {INDIAN_CITIES.map(city => (
                         <CommandItem
@@ -285,10 +287,10 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
             </Popover>
           </div>
 
-          {/* Return (always-present placeholder + conditional content) */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-200">Return</label>
-            {searchParams.tripType === 'round-trip' ? (
+          {/* Return Date (if round-trip) */}
+          {searchParams.tripType === 'round-trip' && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-200">Return</label>
               <Popover open={returnDateOpen} onOpenChange={setReturnDateOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start h-14 text-left font-normal bg-transparent text-white border-white/20">
@@ -315,17 +317,15 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
                   />
                 </PopoverContent>
               </Popover>
-            ) : (
-              <div className="h-14" aria-hidden />
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Search Button (flexible column; will grow if space available) */}
           <div className="justify-self-end w-full md:w-auto">
             <Button
               onClick={handleSearch}
               disabled={!searchParams.origin || !searchParams.destination || !searchParams.departureDate || (searchParams.tripType === 'round-trip' && !searchParams.returnDate)}
-              className="h-14 px-6 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 text-white font-semibold rounded-lg shadow-md w-full md:w-auto justify-center"
+              className="h-14 px-6 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md w-full md:w-auto justify-center"
               size="lg"
             >
               <Search className="mr-2 h-5 w-5" />
