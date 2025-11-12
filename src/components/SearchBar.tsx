@@ -84,8 +84,8 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           className={cn(
             "rounded-full px-5 py-2 font-medium transition-all",
             searchParams.tripType === "one-way"
-            ? "bg-blue-600 text-white shadow-md hover:bg-blue-700"
-            : "bg-violet-700/30 text-violet-200 hover:bg-violet-700/50"
+              ? "bg-blue-600 text-white shadow-md hover:bg-blue-700"
+              : "bg-violet-700/30 text-violet-200 hover:bg-violet-700/50"
           )}
         >
           One-way
@@ -96,13 +96,14 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           className={cn(
             "rounded-full px-5 py-2 font-medium transition-all",
             searchParams.tripType === "round-trip"
-            ? "bg-violet-600 text-white shadow-md hover:bg-violet-700"
-            : "bg-blue-700/30 text-blue-200 hover:bg-blue-700/50"
+              ? "bg-violet-600 text-white shadow-md hover:bg-violet-700"
+              : "bg-blue-700/30 text-blue-200 hover:bg-blue-700/50"
           )}
         >
           Round-trip
         </Button>
       </div>
+
       {/* Transport Mode Tabs */}
       <Tabs value={searchParams.transportMode} onValueChange={(value) => setSearchParams(prev => ({ ...prev, transportMode: value as TransportMode }))}>
         <TabsList className="grid w-full max-w-md grid-cols-3">
@@ -120,9 +121,10 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
         </TabsList>
       </Tabs>
 
-      {/* Search Form — DARK */}
-      <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-indigo-700 text-white rounded-2xl shadow-lg p-6 border border-transparent">
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_auto_auto] gap-4 items-end">
+      {/* Search Form — DARK (flexible search column) */}
+      <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-indigo-700 text-white rounded-2xl shadow-lg p-6 border border-transparent overflow-hidden">
+        {/* grid: last column flexible via minmax(180px, 1fr) so Search can grow/shrink */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_auto_minmax(180px,1fr)] gap-4 items-end">
           {/* Origin */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-200">From</label>
@@ -161,6 +163,25 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
                         </CommandItem>
                       ))}
                     </CommandGroup>
+
+                    {/* dynamic search results */}
+                    {INDIAN_CITIES.slice(0, 0) /* placeholder to keep lint quiet */}
+                    <CommandGroup heading="All Cities">
+                      {INDIAN_CITIES.map(city => (
+                        <CommandItem
+                          key={`${city.id}-all`}
+                          onSelect={() => {
+                            setSearchParams(prev => ({ ...prev, origin: city }));
+                            setOriginOpen(false);
+                          }}
+                        >
+                          <div className="flex flex-col">
+                            <span className="font-medium">{city.name}</span>
+                            <span className="text-xs text-muted-foreground">{city.state} · {city.code}</span>
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
                   </CommandList>
                 </Command>
               </PopoverContent>
@@ -168,9 +189,11 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           </div>
 
           {/* Swap Button */}
-          <Button variant="ghost" size="icon" onClick={swapCities} className="mb-2 md:mb-0 text-white/90">
-            <ArrowLeftRight className="h-4 w-4" />
-          </Button>
+          <div className="flex items-end mb-2 md:mb-0">
+            <Button variant="ghost" size="icon" onClick={swapCities} className="text-white/90">
+              <ArrowLeftRight className="h-4 w-4" />
+            </Button>
+          </div>
 
           {/* Destination */}
           <div className="space-y-2">
@@ -210,13 +233,30 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
                         </CommandItem>
                       ))}
                     </CommandGroup>
+
+                    <CommandGroup heading="All Cities">
+                      {INDIAN_CITIES.map(city => (
+                        <CommandItem
+                          key={`${city.id}-all-dest`}
+                          onSelect={() => {
+                            setSearchParams(prev => ({ ...prev, destination: city }));
+                            setDestinationOpen(false);
+                          }}
+                        >
+                          <div className="flex flex-col">
+                            <span className="font-medium">{city.name}</span>
+                            <span className="text-xs text-muted-foreground">{city.state} · {city.code}</span>
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
                   </CommandList>
                 </Command>
               </PopoverContent>
             </Popover>
           </div>
 
-          {/* Departure Date */}
+          {/* Departure */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-200">Departure</label>
             <Popover open={departureDateOpen} onOpenChange={setDepartureDateOpen}>
@@ -280,16 +320,18 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
             </div>
           )}
 
-          {/* Search Button */}
-          <Button 
-            onClick={handleSearch}
-            disabled={!searchParams.origin || !searchParams.destination || !searchParams.departureDate || (searchParams.tripType === 'round-trip' && !searchParams.returnDate)}
-            className="h-14 px-8 bg-blue-500 hover:bg-blue-600 text-white"
-            size="lg"
-          >
-            <Search className="mr-2 h-5 w-5" />
-            Search
-          </Button>
+          {/* Search Button (flexible column; will grow if space available) */}
+          <div className="justify-self-end w-full md:w-auto">
+            <Button
+              onClick={handleSearch}
+              disabled={!searchParams.origin || !searchParams.destination || !searchParams.departureDate || (searchParams.tripType === 'round-trip' && !searchParams.returnDate)}
+              className="h-14 px-6 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md w-full md:w-auto justify-center"
+              size="lg"
+            >
+              <Search className="mr-2 h-5 w-5" />
+              Search
+            </Button>
+          </div>
         </div>
 
         {/* Available Modes Info */}
@@ -307,4 +349,3 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
     </div>
   );
 };
-
