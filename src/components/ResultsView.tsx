@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { SearchResults, TravelOption } from '@/types/travel';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,10 @@ interface ResultsViewProps {
 }
 
 export const ResultsView = ({ results }: ResultsViewProps) => {
+
+  // 🧠 Remember passenger count for each option
+  const [passengers, setPassengers] = useState<Record<string, number>>({});
+
   const getTransportIcon = (mode: string) => {
     switch (mode) {
       case 'flight': return <Plane className="h-5 w-5" />;
@@ -24,9 +29,9 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
       cheapest: { icon: TrendingDown, label: 'Cheapest', color: 'bg-success text-success-foreground' },
       fastest: { icon: Zap, label: 'Fastest', color: 'bg-warning text-warning-foreground' },
     };
-    
+
     const Icon = config[type].icon;
-    
+
     return (
       <Badge className={cn('absolute -top-3 left-4 px-3 py-1', config[type].color)}>
         <Icon className="h-3 w-3 mr-1" />
@@ -35,57 +40,63 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
     );
   };
 
-  // ✅ UPDATED: Official airline & travel site links
-  const getBookingUrl = (option: TravelOption, passengers = 1) => {
-  const { provider, transportMode, departure, arrival, date } = option;
-  const from = encodeURIComponent(departure.location);
-  const to = encodeURIComponent(arrival.location);
-  const travelDate = date ? date.split('T')[0] : new Date().toISOString().split('T')[0]; // format YYYY-MM-DD
+  // ✅ Updated: booking URLs with passenger + autofill (bus/train only)
+  const getBookingUrl = (option: TravelOption, passengerCount = 1) => {
+    const { provider, transportMode, departure, arrival, date } = option;
+    const from = encodeURIComponent(departure.location);
+    const to = encodeURIComponent(arrival.location);
+    const travelDate = date ? date.split('T')[0] : new Date().toISOString().split('T')[0];
 
-  // ✈️ FLIGHTS (keep original — official airline links)
-  if (transportMode === 'flight') {
-    if (provider.includes('IndiGo')) return 'https://www.goindigo.in/';
-    if (provider.includes('Air India')) return 'https://www.airindia.com/';
-    if (provider.includes('SpiceJet')) return 'https://book.spicejet.com/';
-    if (provider.includes('Vistara')) return 'https://www.airvistara.com/in/en';
-    if (provider.includes('Go First')) return 'https://www.flygofirst.com/';
-  }
+    // ✈️ Flights — keep official websites
+    if (transportMode === 'flight') {
+      if (provider.includes('IndiGo')) return 'https://www.goindigo.in/';
+      if (provider.includes('Air India')) return 'https://www.airindia.com/';
+      if (provider.includes('SpiceJet')) return 'https://book.spicejet.com/';
+      if (provider.includes('Vistara')) return 'https://www.airvistara.com/in/en';
+      if (provider.includes('Go First')) return 'https://www.flygofirst.com/';
+    }
 
-  // 🚆 TRAINS (IRCTC autofill with route)
-  if (transportMode === 'train') {
-    return `https://www.irctc.co.in/nget/train-search/${from}-${to}`;
-  }
+    // 🚆 Trains — autofill route
+    if (transportMode === 'train') {
+      return `https://www.irctc.co.in/nget/train-search/${from}-${to}`;
+    }
 
-  // 🚌 BUSES (RedBus / AbhiBus autofill with date & passengers)
-  if (transportMode === 'bus') {
-    if (provider.includes('RedBus'))
-      return `https://www.redbus.in/bus-tickets/${from}-to-${to}?onward=${travelDate}&pax=${passengers}`;
-    if (provider.includes('AbhiBus'))
-      return `https://www.abhibus.com/bus/${from}-to-${to}?journeyDate=${travelDate}&pax=${passengers}`;
-    return `https://www.redbus.in/bus-tickets/${from}-to-${to}?onward=${travelDate}`;
-  }
+    // 🚌 Buses — autofill route, date, passengers
+    if (transportMode === 'bus') {
+      if (provider.includes('RedBus'))
+        return `https://www.redbus.in/bus-tickets/${from}-to-${to}?onward=${travelDate}&pax=${passengerCount}`;
+      if (provider.includes('AbhiBus'))
+        return `https://www.abhibus.com/bus/${from}-to-${to}?journeyDate=${travelDate}&pax=${passengerCount}`;
+      return `https://www.redbus.in/bus-tickets/${from}-to-${to}?onward=${travelDate}`;
+    }
 
-  // Default fallback
-  return '#';
-};
+    return '#';
+  };
 
-
-
-  const TravelCard = ({ option, recommendation }: { option: TravelOption; recommendation?: 'best' | 'cheapest' | 'fastest' }) => {
+  const TravelCard = ({
+    option,
+    recommendation,
+  }: {
+    option: TravelOption;
+    recommendation?: 'best' | 'cheapest' | 'fastest';
+  }) => {
     const isRecommended = recommendation !== undefined;
-    
+
     const handleBooking = () => {
-      const url = getBookingUrl(option);
+      const passengerCount = passengers[option.id] || 1;
+      const url = getBookingUrl(option, passengerCount);
       window.open(url, '_blank', 'noopener,noreferrer');
     };
-    
+
     return (
-      <Card className={cn(
-        'relative p-6 transition-all hover:shadow-elevated',
-        isRecommended && 'border-2 border-primary'
-      )}>
+      <Card
+        className={cn(
+          'relative p-6 transition-all hover:shadow-elevated',
+          isRecommended && 'border-2 border-primary'
+        )}
+      >
         {recommendation && <RecommendationBadge type={recommendation} />}
-        
+
         <div className="space-y-4">
           {/* Header */}
           <div className="flex items-center justify-between">
@@ -110,21 +121,21 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
               <p className="text-2xl font-bold">{option.departure.time}</p>
               <p className="text-sm text-muted-foreground">{option.departure.location}</p>
             </div>
-            
+
             <div className="flex-1 flex flex-col items-center px-4">
               <p className="text-sm font-medium text-muted-foreground mb-1">{option.duration}</p>
               <div className="w-full h-px bg-border relative">
                 <div className="absolute inset-0 bg-gradient-primary opacity-50" />
               </div>
             </div>
-            
+
             <div className="flex-1 text-right">
               <p className="text-2xl font-bold">{option.arrival.time}</p>
               <p className="text-sm text-muted-foreground">{option.arrival.location}</p>
             </div>
           </div>
 
-          {/* Details */}
+          {/* Details + Passenger + Book */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
@@ -136,10 +147,33 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
                 <span>{option.duration}</span>
               </div>
             </div>
-            
-            <Button size="lg" className="px-8" onClick={handleBooking}>
-              Book Now
-            </Button>
+
+            <div className="flex items-center gap-3">
+              {(option.transportMode === 'bus' || option.transportMode === 'train') && (
+                <>
+                  <label htmlFor={`passengers-${option.id}`} className="text-sm">
+                    Passengers:
+                  </label>
+                  <input
+                    id={`passengers-${option.id}`}
+                    type="number"
+                    min="1"
+                    max="9"
+                    defaultValue={passengers[option.id] || 1}
+                    className="w-16 px-2 py-1 border rounded-md text-center"
+                    onChange={(e) =>
+                      setPassengers({
+                        ...passengers,
+                        [option.id]: parseInt(e.target.value),
+                      })
+                    }
+                  />
+                </>
+              )}
+              <Button size="lg" className="px-8" onClick={handleBooking}>
+                Book Now
+              </Button>
+            </div>
           </div>
 
           {/* Amenities */}
@@ -164,20 +198,26 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1">Lowest Price</p>
-            <p className="text-3xl font-bold text-success">₹{results.priceStats.lowest.toLocaleString()}</p>
+            <p className="text-3xl font-bold text-success">
+              ₹{results.priceStats.lowest.toLocaleString()}
+            </p>
           </div>
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1">Average Price</p>
-            <p className="text-3xl font-bold">₹{results.priceStats.average.toLocaleString()}</p>
+            <p className="text-3xl font-bold">
+              ₹{results.priceStats.average.toLocaleString()}
+            </p>
           </div>
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1">Highest Price</p>
-            <p className="text-3xl font-bold text-destructive">₹{results.priceStats.highest.toLocaleString()}</p>
+            <p className="text-3xl font-bold text-destructive">
+              ₹{results.priceStats.highest.toLocaleString()}
+            </p>
           </div>
         </div>
       </Card>
 
-      {/* Recommendations */}
+      {/* AI Recommendations */}
       <div>
         <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
           <Sparkles className="h-6 w-6 text-primary" />
@@ -192,15 +232,18 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
 
       {/* All Options */}
       <div>
-        <h2 className="text-2xl font-bold mb-6">All Options ({results.options.length})</h2>
+        <h2 className="text-2xl font-bold mb-6">
+          All Options ({results.options.length})
+        </h2>
         <div className="space-y-4">
           {results.options
-            .filter(option => 
-              option.id !== results.recommendations.best.id &&
-              option.id !== results.recommendations.cheapest.id &&
-              option.id !== results.recommendations.fastest.id
+            .filter(
+              (option) =>
+                option.id !== results.recommendations.best.id &&
+                option.id !== results.recommendations.cheapest.id &&
+                option.id !== results.recommendations.fastest.id
             )
-            .map(option => (
+            .map((option) => (
               <TravelCard key={option.id} option={option} />
             ))}
         </div>
@@ -208,5 +251,3 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
     </div>
   );
 };
-
-
