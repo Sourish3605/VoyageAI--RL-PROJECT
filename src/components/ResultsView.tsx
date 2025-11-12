@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SearchResults, TravelOption } from '@/types/travel';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,7 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
   // Small mapping: City name -> IRCTC station code (extend as needed)
   const IRCTC_CODES: Record<string, string> = {
     Hyderabad: 'HYB',
-    Secunderabad: 'SC', // sometimes used
+    Secunderabad: 'SC',
     Bengaluru: 'SBC',
     Bangalore: 'SBC',
     Chennai: 'MAS',
@@ -44,29 +44,28 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
   };
 
   // Bus site friendly names mapping: normalize common variations to expected tokens
-  // (RedBus/AbhiBus generally accept city names with hyphens; normalize common variants)
   const BUS_CITY_MAP: Record<string, string> = {
     Bengaluru: 'Bengaluru',
     Bangalore: 'Bengaluru',
     'New Delhi': 'New-Delhi',
     'Delhi': 'New-Delhi',
-    'Hyderabad': 'Hyderabad',
-    'Secunderabad': 'Secunderabad',
-    'Chennai': 'Chennai',
-    'Mumbai': 'Mumbai',
-    'Pune': 'Pune',
-    'Bhopal': 'Bhopal',
-    'Visakhapatnam': 'Visakhapatnam',
-    'Kolkata': 'Kolkata',
-    'Ahmedabad': 'Ahmedabad',
-    'Jaipur': 'Jaipur',
-    'Lucknow': 'Lucknow',
-    'Coimbatore': 'Coimbatore',
-    'Vijayawada': 'Vijayawada',
-    'Trivandrum': 'Thiruvananthapuram',
-    'Thiruvananthapuram': 'Thiruvananthapuram',
-    'Goa': 'Goa',
-    'Surat': 'Surat',
+    Hyderabad: 'Hyderabad',
+    Secunderabad: 'Secunderabad',
+    Chennai: 'Chennai',
+    Mumbai: 'Mumbai',
+    Pune: 'Pune',
+    Bhopal: 'Bhopal',
+    Visakhapatnam: 'Visakhapatnam',
+    Kolkata: 'Kolkata',
+    Ahmedabad: 'Ahmedabad',
+    Jaipur: 'Jaipur',
+    Lucknow: 'Lucknow',
+    Coimbatore: 'Coimbatore',
+    Vijayawada: 'Vijayawada',
+    Trivandrum: 'Thiruvananthapuram',
+    Thiruvananthapuram: 'Thiruvananthapuram',
+    Goa: 'Goa',
+    Surat: 'Surat',
   };
 
   const getTransportIcon = (mode: string) => {
@@ -97,23 +96,16 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
   const getAutofillBookingSites = (option: TravelOption, passengerCount = 1) => {
     const { provider, transportMode, departure, arrival, date } = option as any;
 
-    // Prefer explicit codes if provided in TravelOption (departure.code / arrival.code)
     const depCode = (departure?.code || '').toString().trim();
     const arrCode = (arrival?.code || '').toString().trim();
-
-    // Raw names fallback
     const rawFromName = (departure?.location || '').toString().trim();
     const rawToName = (arrival?.location || '').toString().trim();
 
-    // For bus deep links, normalize using BUS_CITY_MAP, fallback to name
     const busFrom = BUS_CITY_MAP[rawFromName] || rawFromName || depCode || '';
     const busTo = BUS_CITY_MAP[rawToName] || rawToName || arrCode || '';
-
-    // Prepare URL-friendly forms (RedBus/AbhiBus like Hyphenated names)
     const busFromToken = encodeURIComponent(busFrom.replace(/\s+/g, '-'));
     const busToToken = encodeURIComponent(busTo.replace(/\s+/g, '-'));
 
-    // For IRCTC, prefer IRCTC_CODES mapping or explicit station codes
     const fromIRCTC = (IRCTC_CODES[rawFromName] || depCode || '').toString().trim();
     const toIRCTC = (IRCTC_CODES[rawToName] || arrCode || '').toString().trim();
 
@@ -121,62 +113,40 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
 
     const sites: { name: string; url: string; autofill: boolean }[] = [];
 
-    // Flights: include all major airline + aggregator home/search pages (no reliable autofill)
+    // Flights (keep to main 5+safe aggregators; no autofill)
     if (transportMode === 'flight') {
-      // airlines
       sites.push({ name: 'IndiGo', url: 'https://www.goindigo.in/', autofill: false });
       sites.push({ name: 'Air India', url: 'https://www.airindia.com/', autofill: false });
-      sites.push({ name: 'SpiceJet', url: 'https://book.spicejet.com/', autofill: false });
       sites.push({ name: 'Vistara', url: 'https://www.airvistara.com/in/en', autofill: false });
-      sites.push({ name: 'Akasa Air', url: 'https://www.akasaair.com/', autofill: false });
-      sites.push({ name: 'AirAsia', url: 'https://www.airasia.com/', autofill: false });
-      sites.push({ name: 'Go First', url: 'https://www.flygofirst.com/', autofill: false });
-
-      // aggregators
       sites.push({ name: 'MakeMyTrip', url: 'https://www.makemytrip.com/flights/', autofill: false });
       sites.push({ name: 'Goibibo', url: 'https://www.goibibo.com/flights/', autofill: false });
-      sites.push({ name: 'EaseMyTrip', url: 'https://www.easemytrip.com/flights.html', autofill: false });
-      sites.push({ name: 'Yatra', url: 'https://www.yatra.com/flights', autofill: false });
-      sites.push({ name: 'ixigo', url: 'https://www.ixigo.com/flights', autofill: false });
-      sites.push({ name: 'Cleartrip', url: 'https://www.cleartrip.com/flights', autofill: false });
-      sites.push({ name: 'Paytm Travel', url: 'https://tickets.paytm.com/flights/', autofill: false });
-      sites.push({ name: 'Skyscanner', url: 'https://www.skyscanner.co.in/', autofill: false });
-
       return sites;
     }
 
-    // Trains: IRCTC autofill if we can resolve station codes, else fallback to homepage/search
+    // Trains
     if (transportMode === 'train') {
       if (fromIRCTC && toIRCTC) {
         sites.push({
-          name: 'IRCTC (Official)',
+          name: 'IRCTC',
           url: `https://www.irctc.co.in/nget/train-search?fromCode=${fromIRCTC}&toCode=${toIRCTC}`,
           autofill: true,
         });
       } else {
         sites.push({
-          name: 'IRCTC (Official)',
+          name: 'IRCTC',
           url: 'https://www.irctc.co.in/nget/train-search',
           autofill: false,
         });
       }
-
-      // aggregator fallbacks
-      sites.push({ name: 'RailYatri', url: 'https://www.railyatri.in/', autofill: false });
-      sites.push({ name: 'ixigo Trains', url: 'https://www.ixigo.com/trains', autofill: false });
       sites.push({ name: 'MakeMyTrip Trains', url: 'https://www.makemytrip.com/railways/', autofill: false });
       sites.push({ name: 'Goibibo Trains', url: 'https://www.goibibo.com/trains/', autofill: false });
-      sites.push({ name: 'Cleartrip Trains', url: 'https://www.cleartrip.com/trains', autofill: false });
       sites.push({ name: 'Paytm Trains', url: 'https://tickets.paytm.com/trains/', autofill: false });
-      sites.push({ name: 'EaseMyTrip Trains', url: 'https://www.easemytrip.com/railways.html', autofill: false });
-      sites.push({ name: 'Yatra Trains', url: 'https://www.yatra.com/trains', autofill: false });
-
+      sites.push({ name: 'RailYatri', url: 'https://www.railyatri.in/', autofill: false });
       return sites;
     }
 
-    // Buses: RedBus & AbhiBus deep-links with normalized city tokens + date + pax
+    // Buses
     if (transportMode === 'bus') {
-      // Only include deep-link when token values available; otherwise fallback to search page
       if (busFromToken && busToToken) {
         sites.push({
           name: 'RedBus',
@@ -189,30 +159,21 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
           autofill: true,
         });
       } else {
-        // fallback homepages if tokens missing
         sites.push({ name: 'RedBus', url: 'https://www.redbus.in/', autofill: false });
         sites.push({ name: 'AbhiBus', url: 'https://www.abhibus.com/', autofill: false });
       }
-
-      // Additional bus OTAs (home/search pages)
       sites.push({ name: 'MakeMyTrip Bus', url: 'https://www.makemytrip.com/bus/', autofill: false });
       sites.push({ name: 'Goibibo Bus', url: 'https://www.goibibo.com/bus/', autofill: false });
       sites.push({ name: 'Paytm Bus', url: 'https://tickets.paytm.com/bus', autofill: false });
-      sites.push({ name: 'ixigo Bus', url: 'https://bus.ixigo.com/', autofill: false });
-      sites.push({ name: 'Yatra Bus', url: 'https://www.yatra.com/bus-booking', autofill: false });
-      sites.push({ name: 'EaseMyTrip Bus', url: 'https://bus.easemytrip.com/', autofill: false });
-      sites.push({ name: 'Cleartrip Bus', url: 'https://www.cleartrip.com/buses', autofill: false });
-      sites.push({ name: 'Travelyaari', url: 'https://www.travelyaari.com/', autofill: false });
-      sites.push({ name: 'IntrCity SmartBus', url: 'https://www.intrcity.com/', autofill: false });
-
       return sites;
     }
 
-    // fallback
     return [{ name: 'Default', url: '#', autofill: false }];
   };
 
-  // Travel card UI (styled to match your screenshot-like layout)
+  // -----------------------
+  // TravelCard (with animated dropdown)
+  // -----------------------
   const TravelCard = ({
     option,
     recommendation,
@@ -225,13 +186,64 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
 
     const bookingSites = getAutofillBookingSites(option, currentPassengers);
 
-    // prefer RedBus as primary for bus, otherwise first site
-    let primary = bookingSites[0];
-    if (option.transportMode === 'bus') {
-      const rb = bookingSites.find(s => s.name.toLowerCase().includes('redbus'));
-      if (rb) primary = rb;
+    // detect official site for the provider (first item)
+    const getOfficialSiteForProvider = (opt: TravelOption) => {
+      const p = (opt.provider || '').toLowerCase();
+      if (p.includes('indigo')) return { name: 'IndiGo', url: 'https://www.goindigo.in/' };
+      if (p.includes('air india') || p.includes('airindia')) return { name: 'Air India', url: 'https://www.airindia.com/' };
+      if (p.includes('spicejet')) return { name: 'SpiceJet', url: 'https://book.spicejet.com/' };
+      if (p.includes('vistara')) return { name: 'Vistara', url: 'https://www.airvistara.com/in/en' };
+      if (p.includes('akasa')) return { name: 'Akasa Air', url: 'https://www.akasaair.com/' };
+      if (p.includes('redbus')) return { name: 'RedBus', url: 'https://www.redbus.in/' };
+      if (p.includes('abhibus')) return { name: 'AbhiBus', url: 'https://www.abhibus.com/' };
+      if (p.includes('irctc')) return { name: 'IRCTC', url: 'https://www.irctc.co.in/nget/train-search' };
+      return null;
+    };
+
+    const official = getOfficialSiteForProvider(option);
+    const nameSet = new Set<string>();
+    const ordered: { name: string; url: string; autofill?: boolean }[] = [];
+
+    if (official) {
+      ordered.push({ name: official.name, url: official.url, autofill: false });
+      nameSet.add(official.name.toLowerCase());
     }
-    const others = bookingSites.filter(s => s.name !== primary.name);
+    for (const s of bookingSites) {
+      const lower = s.name.toLowerCase();
+      if (!nameSet.has(lower)) {
+        ordered.push(s);
+        nameSet.add(lower);
+      }
+    }
+
+    // Dropdown state & refs for outside-click
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement | null>(null);
+    const buttonRef = useRef<HTMLButtonElement | null>(null);
+
+    useEffect(() => {
+      const handleClickOutside = (e: MouseEvent) => {
+        if (
+          menuOpen &&
+          !menuRef.current?.contains(e.target as Node) &&
+          !buttonRef.current?.contains(e.target as Node)
+        ) {
+          setMenuOpen(false);
+        }
+      };
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [menuOpen]);
+
+    const handleOpenSite = (url: string) => {
+      window.open(url, '_blank', 'noopener,noreferrer');
+      setMenuOpen(false);
+    };
+
+    // Animated dropdown classes
+    const dropdownBase = 'absolute right-0 mt-2 w-60 bg-white border rounded-md shadow-lg overflow-hidden z-50 transform transition-all duration-150 ease-out';
+    const dropdownVisible = 'opacity-100 translate-y-0';
+    const dropdownHidden = 'opacity-0 -translate-y-2 pointer-events-none';
 
     return (
       <Card className={cn('relative p-6 rounded-2xl shadow-sm', isRecommended && 'border-2 border-primary')}>
@@ -289,7 +301,6 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* show passengers input for bus/train/flight (you can hide flight input if you prefer) */}
             {(option.transportMode === 'bus' || option.transportMode === 'train' || option.transportMode === 'flight') && (
               <div className="flex items-center gap-2">
                 <label htmlFor={`passengers-${option.id}`} className="text-sm">Passengers:</label>
@@ -310,30 +321,34 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
               </div>
             )}
 
-            {/* Primary booking pill (slightly prominent) */}
-            {primary && (
+            {/* Single Book CTA with dropdown */}
+            <div className="relative inline-block text-left">
               <button
-                type="button"
-                onClick={() => window.open(primary.url, '_blank', 'noopener,noreferrer')}
+                ref={buttonRef}
+                onClick={() => setMenuOpen((p) => !p)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-md font-medium shadow-sm hover:bg-blue-700"
+                type="button"
               >
-                Book on {primary.name}
+                Book
               </button>
-            )}
 
-            {/* Secondary small pills */}
-            <div className="flex gap-2">
-              {others.map((s) => (
-                <button
-                  key={s.name}
-                  onClick={() => window.open(s.url, '_blank', 'noopener,noreferrer')}
-                  className="px-3 py-1 border rounded-full text-sm hover:shadow-sm bg-white"
-                  type="button"
-                >
-                  {s.name}
-                  {s.autofill && <span className="ml-2 text-xs text-green-600">• Auto</span>}
-                </button>
-              ))}
+              <div
+                ref={menuRef}
+                className={`${dropdownBase} ${menuOpen ? dropdownVisible : dropdownHidden}`}
+                aria-hidden={!menuOpen}
+              >
+                {ordered.map((site) => (
+                  <button
+                    key={site.name}
+                    onClick={() => handleOpenSite(site.url)}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center justify-between"
+                    type="button"
+                  >
+                    <span>{site.name}</span>
+                    {site.autofill && <span className="text-green-500 text-xs">Auto</span>}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
