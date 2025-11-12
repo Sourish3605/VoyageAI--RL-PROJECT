@@ -4,6 +4,7 @@ import { ResultsView } from '@/components/ResultsView';
 import { SearchParams, SearchResults } from '@/types/travel';
 import { generateMockResults } from '@/utils/mockData';
 import { Sparkles, TrendingUp, Shield, Zap } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
@@ -19,8 +20,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* ---------------- Animations ---------------- */}
+    <div className="min-h-screen bg-background text-white">
+      {/* 🎨 Animations */}
       <style>{`
         @keyframes gradientShift {
           0% { background-position: 0% 50%; }
@@ -30,81 +31,76 @@ const Index = () => {
 
         @keyframes kenburns {
           0% { transform: scale(1) translateX(0%); }
-          50% { transform: scale(1.08) translateX(-1%); }
+          50% { transform: scale(1.05) translateX(-2%); }
           100% { transform: scale(1) translateX(0%); }
         }
 
-        @media (prefers-reduced-motion: reduce) {
-          .kb-anim { animation: none !important; }
-          .title-shimmer { animation: none !important; }
+        @keyframes glowPulse {
+          0%, 100% { text-shadow: 0 0 15px rgba(180, 150, 255, 0.7); }
+          50% { text-shadow: 0 0 25px rgba(200, 170, 255, 1); }
         }
       `}</style>
 
       {/* ================= HERO SECTION ================= */}
       <header className="relative overflow-hidden border-b">
-        {/* ✈️ Background Image */}
+        {/* 🌄 Background image */}
         <div
           aria-hidden
           className="absolute inset-0 kb-anim"
           style={{
-            backgroundImage: "url('/travel-bg.png')", // ✅ Image from public/
+            backgroundImage: "url('/travel-bg.png')", // 👈 your GitHub image in public/
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center center',
             backgroundSize: 'cover',
             transformOrigin: 'center center',
-            animation: 'kenburns 30s ease-in-out infinite',
+            animation: 'kenburns 22s ease-in-out infinite',
             willChange: 'transform',
           }}
         />
 
-        {/* 🌅 Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
+        {/* 🌫 Overlay for visibility */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
 
-        {/* 🌐 Decorative subtle pattern */}
-        <div
-          className="absolute inset-0 opacity-5 mix-blend-overlay pointer-events-none"
-          style={{
-            backgroundImage:
-              "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iaHNsKDIyMSA4MyUgNTMlIC8gMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')",
-            backgroundSize: '160px',
-          }}
-        />
-
-        {/* ================= HERO CONTENT ================= */}
-        <div className="relative container mx-auto px-4 py-28 text-center text-white">
-          {/* 🌈 Animated Gradient Title */}
+        {/* ================= TEXT CONTENT ================= */}
+        <div className="relative container mx-auto px-4 py-32 text-center">
+          {/* 🟣 Bold & Glowing VoyageAI */}
           <h1
-            className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight bg-clip-text text-transparent inline-block title-shimmer"
+            className="text-6xl md:text-8xl font-extrabold tracking-tight leading-tight
+                       bg-clip-text text-transparent inline-block"
             style={{
               backgroundImage:
-                'linear-gradient(90deg, #8C80FF 0%, #AFA5FF 45%, #D2C8FF 100%)',
+                'linear-gradient(90deg, #A88BFC 0%, #BA9FFF 45%, #CBB7FF 100%)',
               backgroundSize: '200% 200%',
-              animation: 'gradientShift 10s ease infinite',
+              animation: 'gradientShift 8s ease infinite, glowPulse 5s ease-in-out infinite',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
+              letterSpacing: '0.02em',
             }}
           >
             VoyageAI
           </h1>
 
-          {/* 🗣️ Tagline & Quote */}
-          <p className="mt-4 text-base md:text-lg text-white/90 max-w-2xl mx-auto">
+          {/* 🩵 Tagline */}
+          <p className="mt-4 text-lg font-medium text-white/90">
             AI that finds your cheapest way to go
           </p>
-          <p className="mt-3 italic text-sm md:text-base text-white/80 max-w-3xl mx-auto">
+
+          {/* ✈️ Inspirational Quote */}
+          <p className="mt-2 italic text-base md:text-lg text-white/80 max-w-3xl mx-auto">
             “Travel not to escape life, but so life doesn't escape you — arrive, explore, enjoy.”
           </p>
 
-          {/* ✨ Subtitle */}
-          <h2 className="text-2xl md:text-3xl font-semibold mt-10 mb-4 text-white">
+          {/* 💼 Subtitle */}
+          <h2 className="text-3xl md:text-4xl font-bold mt-10 mb-3 text-white drop-shadow-lg">
             Find Your Perfect Journey
           </h2>
-          <p className="text-base md:text-lg text-white/80 max-w-2xl mx-auto">
+
+          <p className="text-lg text-white/85 max-w-2xl mx-auto">
             Compare flights, trains, and buses across India with intelligent recommendations powered by AI.
           </p>
 
-          {/* 💡 Feature Highlights */}
-          <div className="flex flex-wrap justify-center gap-6 text-sm mt-10 mb-12">
+          {/* 🔹 Feature Icons */}
+          <div className="flex flex-wrap justify-center gap-6 text-sm mt-8 mb-12">
             <div className="flex items-center gap-2 text-white/90">
               <div className="p-2 rounded-lg bg-white/10">
                 <TrendingUp className="h-4 w-4 text-white" />
@@ -138,13 +134,13 @@ const Index = () => {
         </div>
       </header>
 
-      {/* ================= SEARCH LOADING ================= */}
+      {/* ================= SEARCHING ================= */}
       {isSearching && (
-        <div className="container mx-auto px-4 py-20 text-center text-white">
-          <div className="inline-block mb-4">
-            <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
+        <div className="container mx-auto px-4 py-20 text-center">
+          <div className="inline-block">
+            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
-          <p className="text-xl font-semibold">Searching for the best options...</p>
+          <p className="mt-6 text-xl font-semibold">Searching for the best options...</p>
           <p className="text-white/70">Our AI is analyzing thousands of routes</p>
         </div>
       )}
@@ -156,47 +152,55 @@ const Index = () => {
         </div>
       )}
 
-      {/* ================= FEATURES SECTION ================= */}
+      {/* ================= WHY CHOOSE SECTION ================= */}
       {!searchResults && !isSearching && (
-        <div className="container mx-auto px-4 py-20 text-center">
-          <h2 className="text-3xl font-bold mb-6">Why Choose VoyageAI?</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
-            Experience the future of travel booking with AI-powered recommendations.
-          </p>
+        <div className="container mx-auto px-4 py-20 text-gray-900">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4 text-white">Why Choose Our Platform?</h2>
+            <p className="text-white/85 max-w-2xl mx-auto">
+              Experience the future of travel booking with AI-powered recommendations.
+            </p>
+          </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {[
-              {
-                icon: <Sparkles className="h-8 w-8 text-white" />,
-                title: 'AI Recommendations',
-                desc: 'Our reinforcement learning model learns to provide the best, cheapest, and fastest options.',
-              },
-              {
-                icon: <TrendingUp className="h-8 w-8 text-white" />,
-                title: 'Live Price Comparison',
-                desc: 'Get real-time fares from RedBus, IRCTC, AbhiBus, MakeMyTrip, and more.',
-              },
-              {
-                icon: <Shield className="h-8 w-8 text-white" />,
-                title: 'Smart Search',
-                desc: 'Intelligent autocomplete with typo tolerance and mode filtering.',
-              },
-            ].map((f, i) => (
-              <div key={i} className="text-center p-6 rounded-2xl bg-card border shadow-card hover:shadow-elevated transition-all">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-primary mb-4">
-                  {f.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-2">{f.title}</h3>
-                <p className="text-muted-foreground">{f.desc}</p>
+            <div className="text-center space-y-4 p-6 rounded-2xl bg-white/10 border border-white/20 shadow-lg hover:shadow-xl transition-all">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500">
+                <Sparkles className="h-8 w-8 text-white" />
               </div>
-            ))}
+              <h3 className="text-xl font-bold text-white">AI Recommendations</h3>
+              <p className="text-white/85">
+                Our model continuously learns to provide the best, cheapest, and fastest options.
+              </p>
+            </div>
+
+            <div className="text-center space-y-4 p-6 rounded-2xl bg-white/10 border border-white/20 shadow-lg hover:shadow-xl transition-all">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500">
+                <TrendingUp className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white">Live Price Comparison</h3>
+              <p className="text-white/85">
+                Real-time prices from multiple providers including AbhiBus, RedBus, IRCTC, and MakeMyTrip.
+              </p>
+            </div>
+
+            <div className="text-center space-y-4 p-6 rounded-2xl bg-white/10 border border-white/20 shadow-lg hover:shadow-xl transition-all">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500">
+                <Shield className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white">Smart Search</h3>
+              <p className="text-white/85">
+                Intelligent autocomplete with typo tolerance and dynamic transport mode filtering.
+              </p>
+            </div>
           </div>
         </div>
       )}
 
       {/* ================= FOOTER ================= */}
-      <footer className="border-t py-8 mt-20 text-center text-sm text-muted-foreground">
-        <p>© 2025 VoyageAI. All rights reserved.</p>
+      <footer className="border-t border-white/20 py-8 mt-20">
+        <div className="container mx-auto px-4 text-center text-sm text-white/70">
+          <p>© 2025 VoyageAI. All rights reserved.</p>
+        </div>
       </footer>
     </div>
   );
