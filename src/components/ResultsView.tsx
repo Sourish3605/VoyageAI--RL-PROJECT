@@ -11,8 +11,7 @@ interface ResultsViewProps {
 }
 
 export const ResultsView = ({ results }: ResultsViewProps) => {
-
-  // 🧠 Remember passenger count for each option
+  // Remember passenger count for each option
   const [passengers, setPassengers] = useState<Record<string, number>>({});
 
   const getTransportIcon = (mode: string) => {
@@ -20,6 +19,7 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
       case 'flight': return <Plane className="h-5 w-5" />;
       case 'train': return <Train className="h-5 w-5" />;
       case 'bus': return <Bus className="h-5 w-5" />;
+      default: return null;
     }
   };
 
@@ -40,65 +40,61 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
     );
   };
 
-  // ✅ Updated: booking URLs with passenger + autofill (bus/train only)
   // Returns an array of booking site choices for an option
   const getBookingUrlList = (option: TravelOption, passengerCount = 1) => {
-  const { provider, transportMode, departure, arrival, date } = option;
-  const from = encodeURIComponent(departure.location);
-  const to = encodeURIComponent(arrival.location);
-  const travelDate = date ? date.split('T')[0] : new Date().toISOString().split('T')[0];
+    const { provider, transportMode, departure, arrival, date } = option as any;
+    const from = encodeURIComponent(departure.location);
+    const to = encodeURIComponent(arrival.location);
+    const travelDate = date ? date.split('T')[0] : new Date().toISOString().split('T')[0];
 
-  const sites: { name: string; url: string }[] = [];
+    const sites: { name: string; url: string }[] = [];
 
-  // Flights: keep official airline sites (single choice)
-  if (transportMode === 'flight') {
-    if (provider.includes('IndiGo')) sites.push({ name: 'IndiGo', url: 'https://www.goindigo.in/' });
-    if (provider.includes('Air India')) sites.push({ name: 'Air India', url: 'https://www.airindia.com/' });
-    if (provider.includes('SpiceJet')) sites.push({ name: 'SpiceJet', url: 'https://book.spicejet.com/' });
-    if (provider.includes('Vistara')) sites.push({ name: 'Vistara', url: 'https://www.airvistara.com/in/en' });
-    if (provider.includes('Go First')) sites.push({ name: 'Go First', url: 'https://www.flygofirst.com/' });
+    // Flights: keep official airline sites (single choice) + aggregators
+    if (transportMode === 'flight') {
+      if (provider.includes('IndiGo')) sites.push({ name: 'IndiGo', url: 'https://www.goindigo.in/' });
+      if (provider.includes('Air India')) sites.push({ name: 'Air India', url: 'https://www.airindia.com/' });
+      if (provider.includes('SpiceJet')) sites.push({ name: 'SpiceJet', url: 'https://book.spicejet.com/' });
+      if (provider.includes('Vistara')) sites.push({ name: 'Vistara', url: 'https://www.airvistara.com/in/en' });
+      if (provider.includes('Go First')) sites.push({ name: 'Go First', url: 'https://www.flygofirst.com/' });
 
-    // Also optionally add aggregators (open their home/search page)
-    sites.push({ name: 'MakeMyTrip', url: 'https://www.makemytrip.com/flights/' });
-    sites.push({ name: 'Skyscanner', url: 'https://www.skyscanner.co.in/' });
-    return sites;
-  }
+      // Aggregators — open their flights page
+      sites.push({ name: 'MakeMyTrip', url: 'https://www.makemytrip.com/flights/' });
+      sites.push({ name: 'Skyscanner', url: 'https://www.skyscanner.co.in/' });
+      sites.push({ name: 'Goibibo', url: 'https://www.goibibo.com/flights/' });
+      return sites;
+    }
 
-  // Trains: IRCTC (route) + aggregator options
-  if (transportMode === 'train') {
-    sites.push({ name: 'IRCTC', url: `https://www.irctc.co.in/nget/train-search/${from}-${to}` });
-    // Aggregators — open their train/book/search pages (may require user to enter date)
-    sites.push({ name: 'RailYatri', url: 'https://www.railyatri.in/' });
-    sites.push({ name: 'ixigo (Trains)', url: 'https://www.ixigo.com/trains' });
-    sites.push({ name: 'Cleartrip (Trains)', url: 'https://www.cleartrip.com/trains' });
-    sites.push({ name: 'MakeMyTrip (Trains)', url: 'https://www.makemytrip.com/railways/' });
-    return sites;
-  }
+    // Trains: IRCTC (route) + aggregator options
+    if (transportMode === 'train') {
+      sites.push({ name: 'IRCTC', url: `https://www.irctc.co.in/nget/train-search/${from}-${to}` });
+      sites.push({ name: 'RailYatri', url: 'https://www.railyatri.in/' });
+      sites.push({ name: 'ixigo (Trains)', url: 'https://www.ixigo.com/trains' });
+      sites.push({ name: 'Cleartrip (Trains)', url: 'https://www.cleartrip.com/trains' });
+      sites.push({ name: 'MakeMyTrip (Trains)', url: 'https://www.makemytrip.com/railways/' });
+      return sites;
+    }
 
-  // Buses: try deep-links for RedBus/AbhiBus, plus aggregators
-  if (transportMode === 'bus') {
-    // deep links that usually work:
-    sites.push({
-      name: 'RedBus',
-      url: `https://www.redbus.in/bus-tickets/${from}-to-${to}?onward=${travelDate}&pax=${passengerCount}`,
-    });
-    sites.push({
-      name: 'AbhiBus',
-      url: `https://www.abhibus.com/bus/${from}-to-${to}?journeyDate=${travelDate}&pax=${passengerCount}`,
-    });
+    // Buses: try deep-links for RedBus/AbhiBus, plus aggregators
+    if (transportMode === 'bus') {
+      sites.push({
+        name: 'RedBus',
+        url: `https://www.redbus.in/bus-tickets/${from}-to-${to}?onward=${travelDate}&pax=${passengerCount}`,
+      });
+      sites.push({
+        name: 'AbhiBus',
+        url: `https://www.abhibus.com/bus/${from}-to-${to}?journeyDate=${travelDate}&pax=${passengerCount}`,
+      });
 
-    // Aggregators / additional OTAs
-    sites.push({ name: 'MakeMyTrip (Bus)', url: `https://www.makemytrip.com/bus/` });
-    sites.push({ name: 'Goibibo (Bus)', url: 'https://www.goibibo.com/bus/' });
-    sites.push({ name: 'Paytm (Bus)', url: 'https://tickets.paytm.com/bus' });
-    sites.push({ name: 'ixigo (Bus)', url: 'https://bus.ixigo.com/' });
+      sites.push({ name: 'MakeMyTrip (Bus)', url: `https://www.makemytrip.com/bus/` });
+      sites.push({ name: 'Goibibo (Bus)', url: 'https://www.goibibo.com/bus/' });
+      sites.push({ name: 'Paytm (Bus)', url: 'https://tickets.paytm.com/bus' });
+      sites.push({ name: 'ixigo (Bus)', url: 'https://bus.ixigo.com/' });
 
-    return sites;
-  }
+      return sites;
+    }
 
-  return [{ name: 'Default', url: '#' }];
-};
-
+    return [{ name: 'Default', url: '#' }];
+  };
 
   const TravelCard = ({
     option,
@@ -109,10 +105,15 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
   }) => {
     const isRecommended = recommendation !== undefined;
 
-    const handleBooking = () => {
-      const passengerCount = passengers[option.id] || 1;
-      const url = getBookingUrl(option, passengerCount);
-      window.open(url, '_blank', 'noopener,noreferrer');
+    // compute booking sites for this option using current passenger count
+    const currentPassengers = passengers[option.id] || 1;
+    const bookingSites = getBookingUrlList(option, currentPassengers);
+    const primary = bookingSites[0];
+    const others = bookingSites.slice(1);
+
+    const handlePrimaryBooking = () => {
+      if (!primary) return;
+      window.open(primary.url, '_blank', 'noopener,noreferrer');
     };
 
     return (
@@ -162,7 +163,7 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
             </div>
           </div>
 
-          {/* Details + Passenger + Book */}
+          {/* Details + Passenger + Booking buttons */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
@@ -176,6 +177,7 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
             </div>
 
             <div className="flex items-center gap-3">
+              {/* Passenger input shown for bus/train (and flights optionally if you want) */}
               {(option.transportMode === 'bus' || option.transportMode === 'train') && (
                 <>
                   <label htmlFor={`passengers-${option.id}`} className="text-sm">
@@ -184,22 +186,42 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
                   <input
                     id={`passengers-${option.id}`}
                     type="number"
-                    min="1"
-                    max="9"
-                    defaultValue={passengers[option.id] || 1}
+                    min={1}
+                    max={9}
+                    value={passengers[option.id] || 1}
                     className="w-16 px-2 py-1 border rounded-md text-center"
                     onChange={(e) =>
                       setPassengers({
                         ...passengers,
-                        [option.id]: parseInt(e.target.value),
+                        [option.id]: Math.max(1, parseInt(e.target.value || '1')),
                       })
                     }
                   />
                 </>
               )}
-              <Button size="lg" className="px-8" onClick={handleBooking}>
-                Book Now
-              </Button>
+
+              {/* Primary booking button */}
+              {primary && (
+                <Button size="lg" className="px-6" onClick={handlePrimaryBooking}>
+                  Book on {primary.name}
+                </Button>
+              )}
+
+              {/* Secondary choices */}
+              {others.length > 0 && (
+                <div className="flex gap-2">
+                  {others.map((s) => (
+                    <button
+                      key={s.name}
+                      type="button"
+                      onClick={() => window.open(s.url, '_blank', 'noopener,noreferrer')}
+                      className="px-3 py-1 border rounded-md text-sm hover:shadow-sm"
+                    >
+                      {s.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -278,4 +300,3 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
     </div>
   );
 };
-
