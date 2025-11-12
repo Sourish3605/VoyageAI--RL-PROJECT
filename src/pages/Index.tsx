@@ -12,7 +12,6 @@ const Index = () => {
 
   const handleSearch = async (params: SearchParams) => {
     setIsSearching(true);
-    // Simulate API call delay
     setTimeout(() => {
       const results = generateMockResults(params);
       setSearchResults(results);
@@ -22,65 +21,68 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <header className="relative overflow-hidden bg-gradient-hero border-b">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iaHNsKDIyMSA4MyUgNTMlIC8gMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-40" />
+      {/* ================= HERO SECTION ================= */}
+      <header className="relative overflow-hidden bg-gradient-to-b from-white/80 to-primary/5 border-b">
+        {/* Subtle pattern background */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iaHNsKDIyMSA4MyUgNTMlIC8gMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30" />
 
-        <div className="container mx-auto px-4 py-12 relative">
-          <div className="text-center mb-12">
-
+        {/* Content */}
+        <div className="container mx-auto px-4 py-20 relative">
+          <div className="text-center mb-10">
             {/* Brand Name */}
-            <h1 className="text-5xl md:text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight text-[#5450F7] drop-shadow-sm">
               VoyageAI
             </h1>
 
             {/* Tagline */}
-            <p className="text-sm md:text-base text-muted-foreground mt-1 mb-6">
+            <p className="mt-3 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               AI that finds your cheapest way to go
             </p>
 
-            {/* Original Heading */}
-            <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
+            {/* Subtitle */}
+            <h2 className="text-3xl md:text-4xl font-semibold mt-8 mb-3 text-slate-800">
               Find Your Perfect Journey
-            </h1>
+            </h2>
 
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-              Compare flights, trains, and buses across India with intelligent recommendations powered by AI
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Compare flights, trains, and buses across India with intelligent recommendations powered by AI.
             </p>
+          </div>
 
-            <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                </div>
-                <span>Best Prices</span>
+          {/* Icons Row */}
+          <div className="flex flex-wrap justify-center gap-6 text-sm mb-12">
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <TrendingUp className="h-4 w-4 text-primary" />
               </div>
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-accent/10">
-                  <Sparkles className="h-4 w-4 text-accent" />
-                </div>
-                <span>AI Recommendations</span>
+              <span>Best Prices</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-accent/10">
+                <Sparkles className="h-4 w-4 text-accent" />
               </div>
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-success/10">
-                  <Shield className="h-4 w-4 text-success" />
-                </div>
-                <span>Secure Booking</span>
+              <span>AI Recommendations</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-success/10">
+                <Shield className="h-4 w-4 text-success" />
               </div>
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-warning/10">
-                  <Zap className="h-4 w-4 text-warning" />
-                </div>
-                <span>Instant Results</span>
+              <span>Secure Booking</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-warning/10">
+                <Zap className="h-4 w-4 text-warning" />
               </div>
+              <span>Instant Results</span>
             </div>
           </div>
 
+          {/* Search Bar */}
           <SearchBar onSearch={handleSearch} />
         </div>
       </header>
 
-      {/* Loading State */}
+      {/* ================= SEARCH LOADING ================= */}
       {isSearching && (
         <div className="container mx-auto px-4 py-20">
           <div className="text-center space-y-4">
@@ -95,20 +97,20 @@ const Index = () => {
         </div>
       )}
 
-      {/* Results */}
+      {/* ================= RESULTS ================= */}
       {searchResults && !isSearching && (
         <div className="container mx-auto px-4 py-12">
           <ResultsView results={searchResults} />
         </div>
       )}
 
-      {/* Features Section (shown when no search) */}
+      {/* ================= FEATURES SECTION (Default View) ================= */}
       {!searchResults && !isSearching && (
         <div className="container mx-auto px-4 py-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Why Choose Our Platform?</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Experience the future of travel booking with AI-powered recommendations
+              Experience the future of travel booking with AI-powered recommendations.
             </p>
           </div>
 
@@ -119,7 +121,7 @@ const Index = () => {
               </div>
               <h3 className="text-xl font-bold">AI Recommendations</h3>
               <p className="text-muted-foreground">
-                Our reinforcement learning model continuously learns to provide the best, cheapest, and fastest options
+                Our reinforcement learning model continuously learns to provide the best, cheapest, and fastest options.
               </p>
             </div>
 
@@ -129,7 +131,7 @@ const Index = () => {
               </div>
               <h3 className="text-xl font-bold">Live Price Comparison</h3>
               <p className="text-muted-foreground">
-                Real-time prices from multiple providers including AbhiBus, RedBus, IRCTC, and MakeMyTrip
+                Real-time prices from multiple providers including AbhiBus, RedBus, IRCTC, and MakeMyTrip.
               </p>
             </div>
 
@@ -139,17 +141,17 @@ const Index = () => {
               </div>
               <h3 className="text-xl font-bold">Smart Search</h3>
               <p className="text-muted-foreground">
-                Intelligent autocomplete with typo tolerance and dynamic transport mode filtering
+                Intelligent autocomplete with typo tolerance and dynamic transport mode filtering.
               </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Footer */}
+      {/* ================= FOOTER ================= */}
       <footer className="border-t py-8 mt-20">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© 2025 VoyageAI.</p>
+          <p>© 2025 VoyageAI. All rights reserved.</p>
         </div>
       </footer>
     </div>
