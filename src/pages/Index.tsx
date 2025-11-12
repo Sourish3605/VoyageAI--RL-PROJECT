@@ -21,21 +21,47 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Inject keyframes for the gradient shimmer */}
+      <style>{`
+        @keyframes gradientShift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+      `}</style>
+
       {/* ================= HERO SECTION ================= */}
       <header className="relative overflow-hidden bg-gradient-to-b from-white/80 to-primary/5 border-b">
-        {/* Subtle pattern background */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iaHNsKDIyMSA4MyUgNTMlIC8gMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30" />
+        {/* Subtle SVG pattern background */}
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage:
+              "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iaHNsKDIyMSA4MyUgNTMlIC8gMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')",
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+          }}
+        />
 
         {/* Content */}
         <div className="container mx-auto px-4 py-20 relative">
           <div className="text-center mb-10">
-            {/* Brand Name */}
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight text-[#5450F7] drop-shadow-sm">
+            {/* Brand Name with animated gradient shimmer */}
+            <h1
+              className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight bg-clip-text text-transparent"
+              style={{
+                background:
+                  'linear-gradient(90deg, #7B6FF0 0%, #8F84F8 45%, #B9A7FF 100%)',
+                backgroundSize: '200% 200%',
+                animation: 'gradientShift 6s ease infinite',
+              }}
+            >
               VoyageAI
             </h1>
 
             {/* Tagline */}
-            <p className="mt-3 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="mt-3 text-base md:text-lg text-[#5F6E9D] max-w-2xl mx-auto">
               AI that finds your cheapest way to go
             </p>
 
