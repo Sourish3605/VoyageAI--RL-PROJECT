@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { SearchBar } from '@/components/SearchBar';
 import { ResultsView } from '@/components/ResultsView';
 import { SearchParams, SearchResults } from '@/types/travel';
@@ -22,7 +21,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-white">
-      {/* 🎨 Animations */}
+      {/* 🎨 Animations (CSS keyframes only) */}
       <style>{`
         @keyframes gradientShift {
           0% { background-position: 0% 50%; }
@@ -44,7 +43,7 @@ const Index = () => {
 
       {/* ================= HERO SECTION ================= */}
       <header className="relative overflow-hidden border-b">
-        {/* 🌄 Background image */}
+        {/* Background image */}
         <div
           aria-hidden
           className="absolute inset-0"
@@ -59,15 +58,13 @@ const Index = () => {
           }}
         />
 
-        {/* 🌫 Overlay */}
+        {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
 
-        {/* ================= TEXT CONTENT ================= */}
+        {/* Text content */}
         <div className="relative container mx-auto px-4 py-32 text-center">
-          {/* 🟣 Glowing VoyageAI Title */}
           <h1
-            className="text-6xl md:text-8xl font-extrabold tracking-tight leading-tight
-                       bg-clip-text text-transparent inline-block"
+            className="text-6xl md:text-8xl font-extrabold tracking-tight leading-tight bg-clip-text text-transparent inline-block"
             style={{
               backgroundImage:
                 'linear-gradient(90deg, #A88BFC 0%, #BA9FFF 45%, #CBB7FF 100%)',
@@ -81,17 +78,14 @@ const Index = () => {
             VoyageAI
           </h1>
 
-          {/* 🩵 Tagline */}
           <p className="mt-4 text-lg font-extrabold text-white tracking-wide drop-shadow-lg">
             AI that finds your cheapest way to go
           </p>
 
-          {/* ✈️ Inspirational Quote */}
           <p className="mt-2 italic text-base md:text-lg font-extrabold text-white max-w-3xl mx-auto drop-shadow-lg">
             “Travel not to escape life, but so life doesn't escape you — arrive, explore, enjoy.”
           </p>
 
-          {/* 💼 Subtitle with Stylish Gradient */}
           <h2
             className="text-4xl md:text-5xl font-extrabold mt-10 mb-3 drop-shadow-2xl inline-block bg-clip-text text-transparent"
             style={{
@@ -110,7 +104,7 @@ const Index = () => {
             Compare flights, trains, and buses across India with intelligent recommendations powered by AI.
           </p>
 
-          {/* 🔹 Feature Icons */}
+          {/* Feature Icons */}
           <div className="flex flex-wrap justify-center gap-6 text-base mt-8 mb-12 font-extrabold tracking-wide text-white">
             <div className="flex items-center gap-2">
               <div className="p-2 rounded-lg bg-gradient-to-tr from-indigo-500 to-indigo-800 shadow-md">
@@ -141,14 +135,14 @@ const Index = () => {
             </div>
           </div>
 
-          {/* 🔍 Search Bar */}
+          {/* Search Bar */}
           <div className="mx-auto max-w-3xl">
             <SearchBar onSearch={handleSearch} />
           </div>
         </div>
       </header>
 
-      {/* ================= SEARCHING ================= */}
+      {/* SEARCHING */}
       {isSearching && (
         <div className="container mx-auto px-4 py-20 text-center">
           <div className="inline-block">
@@ -159,80 +153,56 @@ const Index = () => {
         </div>
       )}
 
-      {/* ================= RESULTS ================= */}
+      {/* RESULTS */}
       {searchResults && !isSearching && (
         <div className="container mx-auto px-4 py-12">
           <ResultsView results={searchResults} />
         </div>
       )}
 
-      {/* ================= WHY CHOOSE SECTION (animated) ================= */}
+      {/* WHY CHOOSE SECTION (non-animated fallback) */}
       {!searchResults && !isSearching && (
         <section className="py-20 bg-gray-50">
           <div className="container mx-auto px-4">
-            {/* Section Header */}
             <div className="text-center mb-16">
-              <motion.h2
-                initial={{ opacity: 0, y: -12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="text-4xl font-extrabold text-gray-900 mb-4"
-              >
+              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">
                 Why Choose Our Platform?
-              </motion.h2>
+              </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Experience the future of travel booking with AI-powered recommendations and real-time intelligence.
               </p>
             </div>
 
-            {/* Cards Grid */}
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-              {[
-                {
-                  title: 'AI Recommendations',
-                  desc: 'Our model continuously learns to provide the best, cheapest, and fastest travel options.',
-                  Icon: Sparkles,
-                },
-                {
-                  title: 'Live Price Comparison',
-                  desc: 'Real-time prices from AbhiBus, RedBus, IRCTC, and MakeMyTrip — all compared instantly.',
-                  Icon: TrendingUp,
-                },
-                {
-                  title: 'Smart Search',
-                  desc: 'Intelligent autocomplete with typo tolerance and dynamic mode filtering for easy booking.',
-                  Icon: Shield,
-                },
-              ].map((card, i) => {
-                const Icon = card.Icon;
-                return (
-                  <motion.div
-                    key={card.title}
-                    className="group bg-white rounded-2xl p-8 text-center shadow-lg border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-indigo-200 hover:bg-gradient-to-b hover:from-white hover:to-indigo-50 cursor-pointer"
-                    initial={{ opacity: 0, y: 24, scale: 0.98 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: true, amount: 0.2 }}
-                    transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.12 }}
-                  >
-                    <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 shadow-md group-hover:scale-110 transform transition">
-                      <Icon className="h-8 w-8 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-700">
-                      {card.title}
-                    </h3>
-                    <p className="text-gray-600 group-hover:text-gray-700">
-                      {card.desc}
-                    </p>
-                  </motion.div>
-                );
-              })}
+              <div className="group bg-white rounded-2xl p-8 text-center shadow-lg border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-indigo-200 hover:bg-gradient-to-b hover:from-white hover:to-indigo-50 cursor-pointer">
+                <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 shadow-md">
+                  <Sparkles className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">AI Recommendations</h3>
+                <p className="text-gray-600">Our model continuously learns to provide the best, cheapest, and fastest travel options.</p>
+              </div>
+
+              <div className="group bg-white rounded-2xl p-8 text-center shadow-lg border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-indigo-200 hover:bg-gradient-to-b hover:from-white hover:to-indigo-50 cursor-pointer">
+                <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 shadow-md">
+                  <TrendingUp className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Live Price Comparison</h3>
+                <p className="text-gray-600">Real-time prices from AbhiBus, RedBus, IRCTC, and MakeMyTrip — all compared instantly.</p>
+              </div>
+
+              <div className="group bg-white rounded-2xl p-8 text-center shadow-lg border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-indigo-200 hover:bg-gradient-to-b hover:from-white hover:to-indigo-50 cursor-pointer">
+                <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 shadow-md">
+                  <Shield className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Smart Search</h3>
+                <p className="text-gray-600">Intelligent autocomplete with typo tolerance and dynamic mode filtering for easy booking.</p>
+              </div>
             </div>
           </div>
         </section>
       )}
 
-      {/* ================= FOOTER ================= */}
+      {/* FOOTER */}
       <footer className="border-t border-white/20 py-8 mt-20">
         <div className="container mx-auto px-4 text-center text-sm text-white/70">
           <p>© 2025 VoyageAI. All rights reserved.</p>
