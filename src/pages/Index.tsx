@@ -21,101 +21,135 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ✅ Keyframes for shimmer animation */}
+      {/* ---------------- Keyframes & reduced-motion handling ---------------- */}
       <style>{`
         @keyframes gradientShift {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
         }
+
+        @keyframes kenburns {
+          0% { transform: scale(1) translateX(0%); }
+          50% { transform: scale(1.06) translateX(-2%); }
+          100% { transform: scale(1) translateX(0%); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .kb-anim { animation: none !important; }
+          .title-shimmer { animation: none !important; }
+        }
       `}</style>
 
-      {/* ================= HERO SECTION ================= */}
-      <header className="relative overflow-hidden bg-gradient-to-b from-white/80 to-primary/5 border-b">
-        {/* Subtle pattern */}
+      {/* ================= HERO SECTION (animated background) ================= */}
+      <header className="relative overflow-hidden border-b">
+        {/* Background image layer — put your image at public/images/travel-bg.jpg */}
         <div
-          className="absolute inset-0 opacity-30"
+          aria-hidden
+          className="absolute inset-0 kb-anim"
           style={{
-            backgroundImage:
-              "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iaHNsKDIyMSA4MyUgNTMlIC8gMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')",
+            backgroundImage: "url('/images/travel-bg.jpg')",
             backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
+            backgroundPosition: 'center center',
             backgroundSize: 'cover',
+            transformOrigin: 'center center',
+            animation: 'kenburns 20s ease-in-out infinite',
+            willChange: 'transform',
           }}
         />
 
-        <div className="container mx-auto px-4 py-20 relative">
-          <div className="text-center mb-10">
-            {/* ✅ Soft animated gradient logo text */}
-            <h1
-              className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight 
-                         bg-clip-text text-transparent select-none inline-block"
-              style={{
-                backgroundImage:
-                  'linear-gradient(90deg, #7B6FF0 0%, #8F84F8 45%, #B9A7FF 100%)',
-                backgroundSize: '200% 200%',
-                animation: 'gradientShift 8s ease infinite',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              VoyageAI
-            </h1>
+        {/* Overlay to improve contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/55" />
 
-            {/* Tagline */}
-            <p className="mt-3 text-base md:text-lg text-[#5F6E9D] max-w-2xl mx-auto">
-              AI that finds your cheapest way to go
-            </p>
+        {/* Subtle decorative pattern (optional) */}
+        <div
+          className="absolute inset-0 opacity-8 pointer-events-none"
+          style={{
+            backgroundImage:
+              "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iaHNsKDIyMSA4MyUgNTMlIC8gMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')",
+            backgroundRepeat: 'repeat',
+            backgroundSize: '160px',
+            mixBlendMode: 'overlay',
+          }}
+        />
 
-            {/* Subtitle */}
-            <h2 className="text-3xl md:text-4xl font-semibold mt-8 mb-3 text-slate-800">
-              Find Your Perfect Journey
-            </h2>
+        {/* Content (on top) */}
+        <div className="relative container mx-auto px-4 py-28 text-center">
+          {/* Animated gradient title */}
+          <h1
+            className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight 
+                       bg-clip-text text-transparent select-none inline-block title-shimmer"
+            style={{
+              backgroundImage: 'linear-gradient(90deg, #7B6FF0 0%, #8F84F8 45%, #B9A7FF 100%)',
+              backgroundSize: '200% 200%',
+              animation: 'gradientShift 8s ease infinite',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            VoyageAI
+          </h1>
 
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Compare flights, trains, and buses across India with intelligent recommendations powered by AI.
-            </p>
-          </div>
+          {/* Tagline */}
+          <p className="mt-4 text-sm md:text-base text-[#e6e9f8] max-w-2xl mx-auto">
+            AI that finds your cheapest way to go
+          </p>
 
-          {/* Feature Icons */}
-          <div className="flex flex-wrap justify-center gap-6 text-sm mb-12">
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <TrendingUp className="h-4 w-4 text-primary" />
+          {/* Quote */}
+          <p className="mt-2 italic text-sm md:text-base text-[#f0f3ff]/90 max-w-3xl mx-auto">
+            “Travel not to escape life, but so life doesn't escape you — arrive, explore, enjoy.”
+          </p>
+
+          {/* Subtitle */}
+          <h2 className="text-2xl md:text-3xl font-semibold mt-8 mb-3 text-white">
+            Find Your Perfect Journey
+          </h2>
+
+          <p className="text-base md:text-lg text-white/80 max-w-2xl mx-auto">
+            Compare flights, trains, and buses across India with intelligent recommendations powered by AI.
+          </p>
+
+          {/* small features row */}
+          <div className="flex flex-wrap justify-center gap-6 text-sm mt-8 mb-12">
+            <div className="flex items-center gap-2 text-white/90">
+              <div className="p-2 rounded-lg bg-white/10">
+                <TrendingUp className="h-4 w-4 text-white" />
               </div>
               <span>Best Prices</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-accent/10">
-                <Sparkles className="h-4 w-4 text-accent" />
+            <div className="flex items-center gap-2 text-white/90">
+              <div className="p-2 rounded-lg bg-white/10">
+                <Sparkles className="h-4 w-4 text-white" />
               </div>
               <span>AI Recommendations</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-success/10">
-                <Shield className="h-4 w-4 text-success" />
+            <div className="flex items-center gap-2 text-white/90">
+              <div className="p-2 rounded-lg bg-white/10">
+                <Shield className="h-4 w-4 text-white" />
               </div>
               <span>Secure Booking</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-warning/10">
-                <Zap className="h-4 w-4 text-warning" />
+            <div className="flex items-center gap-2 text-white/90">
+              <div className="p-2 rounded-lg bg-white/10">
+                <Zap className="h-4 w-4 text-white" />
               </div>
               <span>Instant Results</span>
             </div>
           </div>
 
-          {/* Search Bar */}
-          <SearchBar onSearch={handleSearch} />
+          {/* SearchBar */}
+          <div className="mx-auto max-w-3xl">
+            <SearchBar onSearch={handleSearch} />
+          </div>
         </div>
       </header>
 
-      {/* ================= SEARCHING STATE ================= */}
+      {/* ================= SEARCH LOADING ================= */}
       {isSearching && (
         <div className="container mx-auto px-4 py-20">
           <div className="text-center space-y-4">
             <div className="inline-block">
-              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+              <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
             </div>
             <div>
               <p className="text-xl font-semibold">Searching for the best options...</p>
