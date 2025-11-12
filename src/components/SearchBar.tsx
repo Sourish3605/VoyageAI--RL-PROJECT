@@ -110,23 +110,23 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
         </TabsList>
       </Tabs>
 
-      {/* Search Form */}
-      <div className="bg-card rounded-2xl shadow-card p-6 border">
+      {/* Search Form — DARK */}
+      <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-indigo-700 text-white rounded-2xl shadow-lg p-6 border border-transparent">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_auto_auto] gap-4 items-end">
           {/* Origin */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">From</label>
+            <label className="text-sm font-medium text-slate-200">From</label>
             <Popover open={originOpen} onOpenChange={setOriginOpen}>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-start h-14 text-left font-normal">
-                  <MapPin className="mr-2 h-4 w-4 text-primary" />
+                <Button variant="outline" className="w-full justify-start h-14 text-left font-normal bg-transparent text-white border-white/20">
+                  <MapPin className="mr-2 h-4 w-4 text-white/85" />
                   {searchParams.origin ? (
                     <div className="flex flex-col">
                       <span className="font-semibold">{searchParams.origin.name}</span>
-                      <span className="text-xs text-muted-foreground">{searchParams.origin.state}</span>
+                      <span className="text-xs text-slate-300">{searchParams.origin.state}</span>
                     </div>
                   ) : (
-                    <span className="text-muted-foreground">Select city</span>
+                    <span className="text-slate-300">Select city</span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -158,24 +158,24 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           </div>
 
           {/* Swap Button */}
-          <Button variant="ghost" size="icon" onClick={swapCities} className="mb-2 md:mb-0">
+          <Button variant="ghost" size="icon" onClick={swapCities} className="mb-2 md:mb-0 text-white/90">
             <ArrowLeftRight className="h-4 w-4" />
           </Button>
 
           {/* Destination */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">To</label>
+            <label className="text-sm font-medium text-slate-200">To</label>
             <Popover open={destinationOpen} onOpenChange={setDestinationOpen}>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-start h-14 text-left font-normal">
-                  <MapPin className="mr-2 h-4 w-4 text-accent" />
+                <Button variant="outline" className="w-full justify-start h-14 text-left font-normal bg-transparent text-white border-white/20">
+                  <MapPin className="mr-2 h-4 w-4 text-white/85" />
                   {searchParams.destination ? (
                     <div className="flex flex-col">
                       <span className="font-semibold">{searchParams.destination.name}</span>
-                      <span className="text-xs text-muted-foreground">{searchParams.destination.state}</span>
+                      <span className="text-xs text-slate-300">{searchParams.destination.state}</span>
                     </div>
                   ) : (
-                    <span className="text-muted-foreground">Select city</span>
+                    <span className="text-slate-300">Select city</span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -208,18 +208,18 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
 
           {/* Departure Date */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Departure</label>
+            <label className="text-sm font-medium text-slate-200">Departure</label>
             <Popover open={departureDateOpen} onOpenChange={setDepartureDateOpen}>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-start h-14 text-left font-normal">
-                  <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
+                <Button variant="outline" className="w-full justify-start h-14 text-left font-normal bg-transparent text-white border-white/20">
+                  <CalendarIcon className="mr-2 h-4 w-4 text-white/85" />
                   {searchParams.departureDate ? (
                     <div className="flex flex-col">
                       <span className="font-semibold">{format(searchParams.departureDate, 'MMM dd')}</span>
-                      <span className="text-xs text-muted-foreground">{format(searchParams.departureDate, 'EEEE')}</span>
+                      <span className="text-xs text-slate-300">{format(searchParams.departureDate, 'EEEE')}</span>
                     </div>
                   ) : (
-                    <span className="text-muted-foreground">Select date</span>
+                    <span className="text-slate-300">Select date</span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -240,18 +240,18 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           {/* Return Date (if round-trip) */}
           {searchParams.tripType === 'round-trip' && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Return</label>
+              <label className="text-sm font-medium text-slate-200">Return</label>
               <Popover open={returnDateOpen} onOpenChange={setReturnDateOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start h-14 text-left font-normal">
-                    <CalendarIcon className="mr-2 h-4 w-4 text-accent" />
+                  <Button variant="outline" className="w-full justify-start h-14 text-left font-normal bg-transparent text-white border-white/20">
+                    <CalendarIcon className="mr-2 h-4 w-4 text-white/85" />
                     {searchParams.returnDate ? (
                       <div className="flex flex-col">
                         <span className="font-semibold">{format(searchParams.returnDate, 'MMM dd')}</span>
-                        <span className="text-xs text-muted-foreground">{format(searchParams.returnDate, 'EEEE')}</span>
+                        <span className="text-xs text-slate-300">{format(searchParams.returnDate, 'EEEE')}</span>
                       </div>
                     ) : (
-                      <span className="text-muted-foreground">Select date</span>
+                      <span className="text-slate-300">Select date</span>
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -274,7 +274,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           <Button 
             onClick={handleSearch}
             disabled={!searchParams.origin || !searchParams.destination || !searchParams.departureDate || (searchParams.tripType === 'round-trip' && !searchParams.returnDate)}
-            className="h-14 px-8"
+            className="h-14 px-8 bg-blue-500 hover:bg-blue-600 text-white"
             size="lg"
           >
             <Search className="mr-2 h-5 w-5" />
@@ -284,7 +284,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
 
         {/* Available Modes Info */}
         {searchParams.origin && searchParams.destination && (
-          <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="mt-4 flex items-center gap-2 text-sm text-slate-300">
             <span>Available transport:</span>
             {availableModes.map(mode => (
               <Badge key={mode} variant="secondary" className="capitalize">
