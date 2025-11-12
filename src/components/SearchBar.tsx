@@ -3,8 +3,6 @@ import { City, SearchParams, TransportMode } from '@/types/travel';
 import { INDIAN_CITIES, CITY_TYPO_MAPPINGS, getAvailableTransportModes } from '@/data/cities';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import  SearchBar  from '@/components/SearchBar';
-
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Plane, Train, Bus, MapPin, Calendar as CalendarIcon, ArrowLeftRight, Search } from 'lucide-react';
@@ -16,11 +14,10 @@ interface SearchBarProps {
 }
 
 /**
- * Popover + Autocomplete search bar that:
- * - shows search popovers for From/To and Date
- * - always displays the *selected* values on the buttons (no hover needed)
- * - closes popovers after selection
- * - keeps accessible hover/focus states
+ * Popover + Autocomplete SearchBar
+ * - Popovers for From / To / Date (autocomplete input for cities)
+ * - Selected values always visible on the main triggers
+ * - Closes popover after selection
  */
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -71,7 +68,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const handleSearch = () => {
     if (!searchParams.origin || !searchParams.destination || !searchParams.departureDate) return;
     if (searchParams.tripType === 'round-trip' && !searchParams.returnDate) return;
-    // (If you want passengers in SearchParams, add the field to type and attach here)
+    // attach passengers to SearchParams if your type includes it
     onSearch(searchParams);
   };
 
@@ -429,5 +426,3 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 };
 
 export default SearchBar;
-
-
