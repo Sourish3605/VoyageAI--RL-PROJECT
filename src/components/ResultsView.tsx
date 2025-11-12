@@ -36,12 +36,13 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
   };
 
   // ✅ UPDATED: Official airline & travel site links
-  const getBookingUrl = (option: TravelOption) => {
-  const { provider, transportMode, departure, arrival } = option;
-  const origin = encodeURIComponent(departure.location);
-  const destination = encodeURIComponent(arrival.location);
+  const getBookingUrl = (option: TravelOption, passengers = 1) => {
+  const { provider, transportMode, departure, arrival, date } = option;
+  const from = encodeURIComponent(departure.location);
+  const to = encodeURIComponent(arrival.location);
+  const travelDate = date ? date.split('T')[0] : new Date().toISOString().split('T')[0]; // format YYYY-MM-DD
 
-  // ✈️ Flights (official home booking pages — avoid 404)
+  // ✈️ FLIGHTS (keep original — official airline links)
   if (transportMode === 'flight') {
     if (provider.includes('IndiGo')) return 'https://www.goindigo.in/';
     if (provider.includes('Air India')) return 'https://www.airindia.com/';
@@ -50,23 +51,24 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
     if (provider.includes('Go First')) return 'https://www.flygofirst.com/';
   }
 
-  // 🚆 Trains
+  // 🚆 TRAINS (IRCTC autofill with route)
   if (transportMode === 'train') {
-    return 'https://www.irctc.co.in/nget/train-search';
+    return `https://www.irctc.co.in/nget/train-search/${from}-${to}`;
   }
 
-  // 🚌 Buses
+  // 🚌 BUSES (RedBus / AbhiBus autofill with date & passengers)
   if (transportMode === 'bus') {
     if (provider.includes('RedBus'))
-      return `https://www.redbus.in/bus-tickets/${origin}-to-${destination}`;
+      return `https://www.redbus.in/bus-tickets/${from}-to-${to}?onward=${travelDate}&pax=${passengers}`;
     if (provider.includes('AbhiBus'))
-      return `https://www.abhibus.com/bus/${origin}-to-${destination}`;
-    return 'https://www.redbus.in/';
+      return `https://www.abhibus.com/bus/${from}-to-${to}?journeyDate=${travelDate}&pax=${passengers}`;
+    return `https://www.redbus.in/bus-tickets/${from}-to-${to}?onward=${travelDate}`;
   }
 
   // Default fallback
   return '#';
 };
+
 
 
   const TravelCard = ({ option, recommendation }: { option: TravelOption; recommendation?: 'best' | 'cheapest' | 'fastest' }) => {
@@ -206,4 +208,5 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
     </div>
   );
 };
+
 
