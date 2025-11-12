@@ -43,7 +43,7 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
     Vadodara: 'BRC',
   };
 
-  // Bus site friendly names mapping: normalize common variations to expected tokens
+  // Bus site friendly names mapping
   const BUS_CITY_MAP: Record<string, string> = {
     Bengaluru: 'Bengaluru',
     Bangalore: 'Bengaluru',
@@ -66,6 +66,25 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
     Thiruvananthapuram: 'Thiruvananthapuram',
     Goa: 'Goa',
     Surat: 'Surat',
+  };
+
+  const PREFERRED_PARTNERS: Record<string, string[]> = {
+    // Flights: official first then aggregators
+    'air india': ['Air India', 'MakeMyTrip', 'Goibibo'],
+    'indigo': ['IndiGo', 'MakeMyTrip', 'Skyscanner'],
+    'spicejet': ['SpiceJet', 'MakeMyTrip', 'Goibibo'],
+    'vistara': ['Vistara', 'MakeMyTrip', 'Goibibo'],
+    'go first': ['Go First', 'MakeMyTrip', 'Goibibo'],
+    'akasa': ['Akasa Air', 'MakeMyTrip', 'Goibibo'],
+
+    // Trains
+    'irctc': ['IRCTC', 'MakeMyTrip Trains', 'Goibibo Trains', 'Paytm Trains'],
+    'rail': ['IRCTC', 'MakeMyTrip Trains', 'RailYatri'],
+
+    // Buses
+    'redbus': ['RedBus', 'MakeMyTrip Bus', 'Goibibo Bus', 'Paytm Bus'],
+    'abhibus': ['AbhiBus', 'MakeMyTrip Bus', 'Goibibo Bus', 'Paytm Bus'],
+    'travelyaari': ['Travelyaari', 'RedBus', 'AbhiBus'],
   };
 
   const getTransportIcon = (mode: string) => {
@@ -113,7 +132,7 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
 
     const sites: { name: string; url: string; autofill: boolean }[] = [];
 
-    // Flights (keep to main 5+safe aggregators; no autofill)
+    // Flights (top picks)
     if (transportMode === 'flight') {
       sites.push({ name: 'IndiGo', url: 'https://www.goindigo.in/', autofill: false });
       sites.push({ name: 'Air India', url: 'https://www.airindia.com/', autofill: false });
@@ -172,7 +191,7 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
   };
 
   // -----------------------
-  // TravelCard (with animated dropdown)
+  // TravelCard (with preferred-partners ordering + animated dropdown)
   // -----------------------
   const TravelCard = ({
     option,
@@ -186,7 +205,7 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
 
     const bookingSites = getAutofillBookingSites(option, currentPassengers);
 
-    // detect official site for the provider (first item)
+    // Helper -> official site detection
     const getOfficialSiteForProvider = (opt: TravelOption) => {
       const p = (opt.provider || '').toLowerCase();
       if (p.includes('indigo')) return { name: 'IndiGo', url: 'https://www.goindigo.in/' };
@@ -200,7 +219,14 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
       return null;
     };
 
+    // Build ordered list using PREFERRED_PARTNERS
     const official = getOfficialSiteForProvider(option);
+    const providerKey = (option.provider || '').toLowerCase();
+    // find matching key in PREFERRED_PARTNERS by substring match
+    const matchedKey = Object.keys(PREFERRED_PARTNERS).find(k => providerKey.includes(k)) || null;
+    const preferredOrder = matchedKey ? PREFERRED_PARTNERS[matchedKey] : [];
+
+    // Start ordered array: official (if present)
     const nameSet = new Set<string>();
     const ordered: { name: string; url: string; autofill?: boolean }[] = [];
 
@@ -208,15 +234,27 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
       ordered.push({ name: official.name, url: official.url, autofill: false });
       nameSet.add(official.name.toLowerCase());
     }
+
+    // Add preferred partners in order (only if they exist in bookingSites)
+    for (const partnerName of preferredOrder) {
+      const match = bookingSites.find(s => s.name.toLowerCase() === partnerName.toLowerCase() || s.name.toLowerCase().includes(partnerName.toLowerCase()));
+      if (match && !nameSet.has(match.name.toLowerCase())) {
+        ordered.push(match);
+        nameSet.add(match.name.toLowerCase());
+      }
+      if (ordered.length >= 5) break; // limit to 5
+    }
+
+    // Add remaining bookingSites (fill up to 5 items)
     for (const s of bookingSites) {
-      const lower = s.name.toLowerCase();
-      if (!nameSet.has(lower)) {
+      if (ordered.length >= 5) break;
+      if (!nameSet.has(s.name.toLowerCase())) {
         ordered.push(s);
-        nameSet.add(lower);
+        nameSet.add(s.name.toLowerCase());
       }
     }
 
-    // Dropdown state & refs for outside-click
+    // Dropdown state & refs
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
     const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -241,7 +279,7 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
     };
 
     // Animated dropdown classes
-    const dropdownBase = 'absolute right-0 mt-2 w-60 bg-white border rounded-md shadow-lg overflow-hidden z-50 transform transition-all duration-150 ease-out';
+    const dropdownBase = 'absolute right-0 mt-2 w-60 bg-white border rounded-md shadow-lg overflow-hidden z-50 transform transition-all duration-180 ease-out';
     const dropdownVisible = 'opacity-100 translate-y-0';
     const dropdownHidden = 'opacity-0 -translate-y-2 pointer-events-none';
 
@@ -321,7 +359,7 @@ export const ResultsView = ({ results }: ResultsViewProps) => {
               </div>
             )}
 
-            {/* Single Book CTA with dropdown */}
+            {/* Single Book CTA */}
             <div className="relative inline-block text-left">
               <button
                 ref={buttonRef}
