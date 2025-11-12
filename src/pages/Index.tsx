@@ -46,9 +46,9 @@ const Index = () => {
         {/* 🌄 Background image */}
         <div
           aria-hidden
-          className="absolute inset-0 kb-anim"
+          className="absolute inset-0"
           style={{
-            backgroundImage: "url('/travel-bg.png')", // 👈 your GitHub image in public/
+            backgroundImage: "url('/travel-bg.png')", // Place your hero image in /public/
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center center',
             backgroundSize: 'cover',
@@ -58,12 +58,12 @@ const Index = () => {
           }}
         />
 
-        {/* 🌫 Overlay for visibility */}
+        {/* 🌫 Overlay for better contrast */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
 
         {/* ================= TEXT CONTENT ================= */}
         <div className="relative container mx-auto px-4 py-32 text-center">
-          {/* 🟣 Bold & Glowing VoyageAI */}
+          {/* 🟣 Glowing VoyageAI Title */}
           <h1
             className="text-6xl md:text-8xl font-extrabold tracking-tight leading-tight
                        bg-clip-text text-transparent inline-block"
@@ -81,49 +81,54 @@ const Index = () => {
           </h1>
 
           {/* 🩵 Tagline */}
-          <p className="mt-4 text-lg font-medium text-white/90">
+          <p className="mt-4 text-lg font-medium text-violet-200">
             AI that finds your cheapest way to go
           </p>
 
           {/* ✈️ Inspirational Quote */}
-          <p className="mt-2 italic text-base md:text-lg text-white/80 max-w-3xl mx-auto">
+          <p className="mt-2 italic text-base md:text-lg text-indigo-200 max-w-3xl mx-auto">
             “Travel not to escape life, but so life doesn't escape you — arrive, explore, enjoy.”
           </p>
 
           {/* 💼 Subtitle */}
-          <h2 className="text-3xl md:text-4xl font-bold mt-10 mb-3 text-white drop-shadow-lg">
-            Find Your Perfect Journey
+          <h2 className="text-3xl md:text-4xl font-bold mt-10 mb-3">
+            <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
+              Find Your Perfect Journey
+            </span>
           </h2>
 
-          <p className="text-lg text-white/85 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-300 max-w-2xl mx-auto">
             Compare flights, trains, and buses across India with intelligent recommendations powered by AI.
           </p>
 
           {/* 🔹 Feature Icons */}
           <div className="flex flex-wrap justify-center gap-6 text-sm mt-8 mb-12">
-            <div className="flex items-center gap-2 text-white/90">
-              <div className="p-2 rounded-lg bg-white/10">
-                <TrendingUp className="h-4 w-4 text-white" />
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-indigo-400/10">
+                <TrendingUp className="h-4 w-4 text-indigo-400" />
               </div>
-              <span>Best Prices</span>
+              <span className="text-indigo-200">Best Prices</span>
             </div>
-            <div className="flex items-center gap-2 text-white/90">
-              <div className="p-2 rounded-lg bg-white/10">
-                <Sparkles className="h-4 w-4 text-white" />
+
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-violet-400/10">
+                <Sparkles className="h-4 w-4 text-violet-400" />
               </div>
-              <span>AI Recommendations</span>
+              <span className="text-violet-200">AI Recommendations</span>
             </div>
-            <div className="flex items-center gap-2 text-white/90">
-              <div className="p-2 rounded-lg bg-white/10">
-                <Shield className="h-4 w-4 text-white" />
+
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-blue-400/10">
+                <Shield className="h-4 w-4 text-blue-400" />
               </div>
-              <span>Secure Booking</span>
+              <span className="text-blue-200">Secure Booking</span>
             </div>
-            <div className="flex items-center gap-2 text-white/90">
-              <div className="p-2 rounded-lg bg-white/10">
-                <Zap className="h-4 w-4 text-white" />
+
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-purple-400/10">
+                <Zap className="h-4 w-4 text-purple-400" />
               </div>
-              <span>Instant Results</span>
+              <span className="text-purple-200">Instant Results</span>
             </div>
           </div>
 
@@ -154,9 +159,11 @@ const Index = () => {
 
       {/* ================= WHY CHOOSE SECTION ================= */}
       {!searchResults && !isSearching && (
-        <div className="container mx-auto px-4 py-20 text-gray-900">
+        <div className="container mx-auto px-4 py-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 text-white">Why Choose Our Platform?</h2>
+            <h2 className="text-3xl font-bold mb-4 text-white">
+              Why Choose Our Platform?
+            </h2>
             <p className="text-white/85 max-w-2xl mx-auto">
               Experience the future of travel booking with AI-powered recommendations.
             </p>
