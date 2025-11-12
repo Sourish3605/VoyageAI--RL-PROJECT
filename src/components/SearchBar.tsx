@@ -76,23 +76,33 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
   return (
     <div className="w-full max-w-6xl mx-auto space-y-6">
       {/* Trip Type Toggle */}
-      <div className="flex gap-2">
+      <div className="flex gap-3">
         <Button
-          variant={searchParams.tripType === 'one-way' ? 'default' : 'outline'}
-          onClick={() => setSearchParams(prev => ({ ...prev, tripType: 'one-way', returnDate: null }))}
-          className="rounded-full"
+          onClick={() =>
+            setSearchParams(prev => ({ ...prev, tripType: 'one-way', returnDate: null }))
+          }
+          className={cn(
+            "rounded-full px-5 py-2 font-medium transition-all",
+            searchParams.tripType === "one-way"
+            ? "bg-blue-600 text-white shadow-md hover:bg-blue-700"
+            : "bg-violet-700/30 text-violet-200 hover:bg-violet-700/50"
+          )}
         >
           One-way
         </Button>
+        
         <Button
-          variant={searchParams.tripType === 'round-trip' ? 'default' : 'outline'}
           onClick={() => setSearchParams(prev => ({ ...prev, tripType: 'round-trip' }))}
-          className="rounded-full"
+          className={cn(
+            "rounded-full px-5 py-2 font-medium transition-all",
+            searchParams.tripType === "round-trip"
+            ? "bg-violet-600 text-white shadow-md hover:bg-violet-700"
+            : "bg-blue-700/30 text-blue-200 hover:bg-blue-700/50"
+          )}
         >
           Round-trip
         </Button>
       </div>
-
       {/* Transport Mode Tabs */}
       <Tabs value={searchParams.transportMode} onValueChange={(value) => setSearchParams(prev => ({ ...prev, transportMode: value as TransportMode }))}>
         <TabsList className="grid w-full max-w-md grid-cols-3">
@@ -297,3 +307,4 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
     </div>
   );
 };
+
